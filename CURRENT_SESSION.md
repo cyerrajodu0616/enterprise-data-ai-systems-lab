@@ -47,7 +47,8 @@ None recorded yet.
 
 ## Artifacts created
 
-- Repository guidelines, challenge catalog, roadmap, experiment standard, and Day 1 proposal.
+- Repository guidelines, challenge catalog, roadmap, experiment standard, Day 1 proposal, and reusable daily-package template.
+- No completed `daily-artifacts/day-XX/` package exists yet because Day 1 has not started.
 
 ## Next lesson
 

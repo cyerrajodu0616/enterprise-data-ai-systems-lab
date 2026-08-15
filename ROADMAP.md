@@ -156,6 +156,8 @@ Given an ambiguous requirement spanning large-scale data, multiple sources, anal
 
 Use `DAILY_LESSON_TEMPLATE.md`: Refresh -> Internals -> Modern Implementation -> Industry Guidance -> Industry Case Study -> Learner Decision -> Build -> Break -> Measure -> Generalize -> Interview -> Architecture Bridge -> Reflection.
 
+End by committing a durable package under `daily-artifacts/day-XX/` containing the completed lesson, attempted quiz and reviewed answers, implementation and tests, experiment and measured results, and a self-contained `recap.html`. Follow `DAILY_ARTIFACT_GUIDELINES.md`; never fabricate results or publish solutions before the learner's attempt.
+
 ## Roadmap deviations
 
 When an interview, experiment, missing prerequisite, technology change, or challenge justifies deviation, record the reason, evidence, effect on sequencing, and updates made to `CURRENT_SESSION.md`. Do not silently drift.

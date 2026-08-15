@@ -5,13 +5,14 @@ Committed GitHub state is the source of truth. Conversation memory may supplemen
 ## Read in order
 
 1. `CURRENT_SESSION.md`
-2. `LEARNING_GUIDELINES.md`
-3. `CODING_PRACTICE_GUIDELINES.md`
-4. `ROADMAP.md`
-5. the current week's README/material
-6. the current enterprise challenge
-7. relevant experiment results
-8. `ARCHITECTURE_LAB_BRIDGE.md`
+2. the most recent completed package under `daily-artifacts/day-XX/`, including `recap.html` and source artifacts
+3. `LEARNING_GUIDELINES.md`
+4. `CODING_PRACTICE_GUIDELINES.md`
+5. `ROADMAP.md`
+6. the current week's README/material
+7. the current enterprise challenge
+8. relevant experiment results
+9. `ARCHITECTURE_LAB_BRIDGE.md`
 
 ## Resume response
 
@@ -23,4 +24,4 @@ Before continuing, state:
 4. the next roadmap topic;
 5. any repository inconsistency that must be resolved.
 
-Continue without resetting the program. At the end of every meaningful session, update `CURRENT_SESSION.md` with completed concepts/code/experiments, measured evidence, unresolved questions, project state, interview gaps, artifacts, next lesson, and recommended resume files.
+Continue without resetting the program. At the end of every meaningful session, update `CURRENT_SESSION.md` with completed concepts/code/experiments, measured evidence, unresolved questions, project state, interview gaps, artifacts, next lesson, and recommended resume files. At the end of every completed day, also verify and commit the required `daily-artifacts/day-XX/` package.

@@ -1,0 +1,39 @@
+# Daily Artifact Guidelines
+
+Every completed roadmap day must be recoverable from GitHub without relying on chat history or one workstation.
+
+## Package lifecycle
+
+1. At the start of a day, copy `daily-artifacts/_template/` to `daily-artifacts/day-XX/`.
+2. Keep `quiz-review.md` unanswered until the learner submits `quiz.md`.
+3. Store real SQL, Python, PySpark, dbt, Airflow, configuration, and tests under `implementation/`; link shared project code rather than duplicate it.
+4. Record experiment hypotheses before execution and observed results afterward.
+5. Generate `recap.html` only from completed, reviewed source artifacts.
+6. Open the HTML locally and verify content, links, code formatting, responsive layout, and accessibility basics.
+7. Update `CURRENT_SESSION.md`, commit, and push.
+
+## Required package
+
+```text
+daily-artifacts/day-XX/
+  lesson.md
+  quiz.md
+  quiz-review.md
+  implementation/
+    README.md
+  experiment.md
+  results.md
+  recap.html
+```
+
+## Quiz policy
+
+Use conceptual, execution-plan, implementation, debugging, and Staff-level design questions. The learner answers first. `quiz-review.md` then records corrections, reasoning, and remaining gaps; it is not a hidden answer key generated in advance.
+
+## HTML recap policy
+
+`recap.html` is a portable study artifact, not the source of truth. It must be self-contained HTML/CSS with no required CDN or external runtime and must link to the Markdown, implementation, test, and experiment files. Include problem, mental-model change, key internals, visual explanation where useful, quiz review, implementation summary, evidence, failure/debugging lesson, interview explanation, architecture bridge, and next step. Clearly label unexecuted experiments and hypothetical projections.
+
+## Completion rule
+
+A day is complete only when its package is reviewed, the HTML renders correctly, evidence is honest, `CURRENT_SESSION.md` is updated, and everything is committed and pushed. If an artifact is not applicable, explain why in `lesson.md` rather than leaving an ambiguous placeholder.

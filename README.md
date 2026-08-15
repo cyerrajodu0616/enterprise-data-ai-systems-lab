@@ -47,11 +47,13 @@ Never invent benchmark results. Separate measured observations from scale projec
 - `databricks/` — Spark, Delta, performance, CDC, Unity Catalog, and governance mechanisms.
 - `experiments/` — reproducible experiment definitions and measured results.
 - `industry-case-studies/` — source-backed cases organized by engineering problem.
+- `daily-artifacts/` — committed end-of-day lessons, quizzes, implementations, evidence, and HTML recaps.
 - `ai-integration/` — governed enterprise data for AI.
 - `snowflake/` — later workload-based comparison.
 - `interview-journal/` — interview evidence and targeted follow-up.
 - `DAILY_LESSON_TEMPLATE.md` — the reusable lesson structure.
+- `DAILY_ARTIFACT_GUIDELINES.md` — the required end-of-day package contract.
 - `REFERENCES.md` — durable foundations, current official documentation, and curated engineering sources.
 - `RESUME_PROTOCOL.md` — deterministic continuation from a new session.
 
-Start with `RESUME_PROTOCOL.md`, `CURRENT_SESSION.md`, `ROADMAP.md`, the current challenge, and the Day 1 proposal.
+Start with `RESUME_PROTOCOL.md`, `CURRENT_SESSION.md`, `ROADMAP.md`, the current challenge, and the current day's committed package when one exists.
