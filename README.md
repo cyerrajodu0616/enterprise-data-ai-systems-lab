@@ -1,50 +1,53 @@
 # Enterprise Data & AI Systems Lab
 
-This repository is the **Technical Sharpness** companion to `enterprise-ai-architecture-playbook`. The playbook develops architectural judgment; this lab develops the implementation fluency, performance intuition, and experimental evidence needed to test that judgment.
+This personal, cloud-first repository is the **Technical Sharpness** companion to `enterprise-ai-architecture-playbook`. The playbook develops architectural judgment; this lab develops implementation fluency, performance intuition, debugging skill, and experimental evidence.
 
-It is designed for an experienced Senior/Lead Data Engineer rebuilding and extending Staff-level depth while preparing to interview within approximately one month. It is not a bootcamp, certification guide, or collection of disconnected tutorials.
+It is for an experienced Senior/Lead Data Engineer rebuilding and extending Staff-level depth while preparing to interview within approximately one month. It is not a bootcamp, certification guide, technology checklist, or collection of disconnected tutorials.
 
-## Outcomes
+## Primary learning model
 
-- Rebuild SQL, Python, and PySpark fluency through data/platform-engineering problems.
-- Explain distributed execution from first principles: scans, partitions, stages, tasks, shuffle, joins, spill, skew, retries, and query plans.
-- Build an evolving enterprise lakehouse from operational, file, event, and API sources through Bronze, Silver, Gold, and governed consumers.
-- Develop hands-on Databricks, Delta Lake, CDC, data-quality, performance, cost, and Unity Catalog judgment.
-- Connect traditional database knowledge to distributed systems without treating analogies as exact equivalences.
-- Demonstrate how governed enterprise data supports reliable AI systems.
+Build an enterprise warehouse/lakehouse and progressively make it survive realistic enterprise problems:
 
-## How learning works
+`Operational Sources -> Ingestion -> Bronze/Raw -> Silver/Validated -> Gold/Business -> BI / API / AI`
 
-Every important mechanism starts with the problem it solves, a simple mental model, its internals, the physical bottleneck it changes, its trade-offs and failure limits, and an experiment that can prove or disprove the claim. Performance results belong in experiment records only after measurement; never invent them.
+Start with the business and engineering problem. Determine what breaks, why it breaks internally, which resource becomes constrained, the simplest credible response, how to test it, what complexity and cost it adds, what happens at 10x scale, and how another platform would approach it.
 
-Coding has two modes. In **Learning Mode**, attempt the core implementation manually before asking AI to review it. In **Delivery Mode**, AI-assisted implementation is allowed, but generated code must be understood, important behavior must be tested, and architecture decisions remain the learner's responsibility. The objective is **AI-augmented engineering capability, not AI dependency**.
+Technologies follow problems. Do not use Spark when SQL is sufficient, Airflow when a native schedule is enough, dbt merely because it exists, streaming when batch satisfies the requirement, CDC while full refresh remains acceptable, or complex partitioning without evidence.
 
-## Enterprise project
+## Cloud-first personal lab
 
-The lab evolves one fictional enterprise platform rather than a set of unrelated demos:
+GitHub is the durable source of truth for code, SQL, PySpark, Python, dbt models, Airflow DAGs, tests, configuration templates, architecture notes, experiment definitions/results, and interview notes. No workflow should depend on one workstation.
 
-`Operational DB + Files + Events + External API -> Ingestion -> Bronze -> Silver -> Gold -> BI / API / AI`
+Databricks Free Edition is the initial execution environment where its verified capabilities are sufficient. Each challenge classifies work as **implement and test**, **partially simulate**, or **architecture/design only**. Do not add paid infrastructure to imitate enterprise scale; complexity and cost must earn their place.
 
-The same platform introduces duplicate ingestion, malformed and late data, CDC inserts/updates/deletes, schema evolution, replay, backfills, SCD changes, skew, large joins, small files, concurrency, governance, lineage, access control, and cost trade-offs. Exercises progress from local data to larger distributed runs and enterprise-scale design reasoning.
+## Engineering responsibilities
 
-## Primary platform and comparisons
+- Airflow coordinates work, dependencies, retries, schedules, and backfills; it does not become a container for transformation logic.
+- dbt organizes SQL models, dependencies, tests, documentation, and SQL-oriented lineage.
+- Spark/Databricks performs distributed computation and execution.
+- Delta provides transactional table and storage semantics.
+- Unity Catalog provides catalog, access, governance, discovery, and lineage capabilities where supported.
 
-Databricks is the first-month implementation platform. Spark internals, Delta Lake, incremental processing, performance engineering, and Unity Catalog are core—not optional—tracks. Snowflake is introduced later as a workload-based comparison: how it solves the same business problem differently in compute, organization, governance, concurrency, operations, and cost.
+The choice among direct SQL, dbt, PySpark, and Databricks-native pipelines depends on workload, complexity, scale, team capability, testing, maintainability, operations, and cost.
+
+## Coding and evidence
+
+Manual Practice preserves independent SQL, Python, PySpark, debugging, and execution-plan fluency. AI-Assisted Engineering is allowed for larger delivery work, but generated code must be understood and tested, architecture decisions remain human-owned, and performance claims require measured evidence. The objective is **AI-augmented engineering capability, not AI dependency**.
+
+Never invent benchmark results. Separate measured observations from scale projections and architecture reasoning.
 
 ## Repository map
 
-- `LEARNING_GUIDELINES.md` — the reasoning and evidence standard.
-- `CODING_PRACTICE_GUIDELINES.md` — Learning Mode, Delivery Mode, and practice expectations.
-- `ARCHITECTURE_LAB_BRIDGE.md` — the feedback loop between architecture and experiments.
-- `ROADMAP.md` — the four-week intensive sequence.
-- `CURRENT_SESSION.md` — the active focus and next lesson.
-- `foundations/` — database-to-distributed analogies and distributed mental models.
-- `coding/` — SQL, Python, and PySpark practice.
-- `enterprise-data-platform/` — the evolving project and its lifecycle areas.
-- `databricks/` — Spark, Delta, CDC, performance, governance, and Unity Catalog.
-- `experiments/` — repeatable measurement records.
-- `snowflake/` — later comparative learning.
-- `ai-integration/` — governed structured access, retrieval, evaluation, and AI governance.
-- `interview-journal/` — evidence-driven interview reflection.
+- `enterprise-challenges/` — primary learning sequence and challenge catalog.
+- `enterprise-data-platform/` — the evolving warehouse/lakehouse implementation.
+- `coding/` — manual SQL, Python, and PySpark practice.
+- `debugging/` — broken-system diagnosis using evidence and regression tests.
+- `orchestration/airflow/` — orchestration decisions and Airflow artifacts.
+- `transformations/dbt/` — SQL transformation, testing, and documentation artifacts.
+- `databricks/` — Spark, Delta, performance, CDC, Unity Catalog, and governance mechanisms.
+- `experiments/` — reproducible experiment definitions and measured results.
+- `ai-integration/` — governed enterprise data for AI.
+- `snowflake/` — later workload-based comparison.
+- `interview-journal/` — interview evidence and targeted follow-up.
 
-Start with `ROADMAP.md`, `CURRENT_SESSION.md`, and the Day 1 lesson in `foundations/sql-to-distributed-systems/README.md`.
+Start with `ROADMAP.md`, `CURRENT_SESSION.md`, the challenge catalog, and the Day 1 proposal.

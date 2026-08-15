@@ -1,18 +1,13 @@
-# Unity Catalog Learning Track
+# Unity Catalog: Problem-Driven Governance
 
-Study why centralized catalog and governance capabilities exist; metastore/catalog/schema/table hierarchy; managed and external data; users, groups, and service principals; grants, privileges, ownership, least privilege, workspace/data boundaries, lineage, discovery, governed tables/views/files, job identities, environment separation, auditability, classification/tagging where supported, cross-domain sharing, and AI-system access.
+Begin with access problems, not GRANT syntax:
 
-## Exercise sequence
+- Finance can read aggregated financial data.
+- A restricted team can access transaction-level data.
+- Another domain can use behavioral data but not sensitive fields.
+- Pipeline service identities can write only their assigned layers.
+- An AI application can access only approved governed datasets.
 
-1. Design logical catalogs for environments and domains.
-2. Create schemas and governed tables.
-3. Define human and service roles.
-4. Implement least privilege.
-5. Demonstrate allowed and denied access.
-6. Trace transformation lineage and document its limits.
-7. Design service-identity access.
-8. Design dev/test/prod governance.
-9. Model cross-domain sharing.
-10. Explain governance effects on an AI application consuming enterprise data.
+Use these scenarios to study catalog/schema/table hierarchy, ownership, users/groups/service identities, privileges, least privilege, lineage, discovery, auditability, environment/domain design, and governed AI access. Classify each exercise by what the current environment can implement, simulate, or only design.
 
-Unity Catalog does not automatically solve governance. Every exercise must identify ownership processes, policy authors, operational responsibility, incorrect-grant risk, privilege sprawl, lineage gaps, and organizational responsibilities.
+A governance product does not create good governance. Record policy ownership, grant approval and review, privilege-sprawl risk, incorrect grants, lineage limitations, operational processes, and organizational responsibility.

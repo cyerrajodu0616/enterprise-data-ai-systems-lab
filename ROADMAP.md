@@ -1,35 +1,38 @@
-# Four-Week Technical Sharpness Roadmap
+# Four-Week Enterprise Challenge Roadmap
 
-This is an intensive starting sequence, not the end of the lab. Each week combines manual coding, internals, experiments, project evolution, and interview articulation.
+The roadmap sequences problems, not products. Each week extends the same warehouse/lakehouse, includes manual coding and debugging, and produces evidence or clearly labeled design reasoning.
 
-## Week 1 — Distributed Systems + Coding Refresh
+## Week 1 — Build It Correctly
 
-Focus on SQL, Python, the Spark execution model, partitions, shuffle, joins, skew, plans, and the first Bronze-to-Gold project flow. Start with Day 1: **From SQL/Oracle Execution to Distributed Spark Execution**.
+**Theme:** From traditional database execution to distributed enterprise data processing.
 
-Outcome: rebuild coding fluency and a physical mental model for distributed data execution.
+Build the initial warehouse: requirements, source contracts, dimensional grain, facts/dimensions, ingestion, and Bronze/Silver/Gold responsibilities. Refresh SQL, Python, and PySpark while studying partitions, stages/tasks, shuffle, joins, and plans.
 
-## Week 2 — Modern Databricks Data Platform
+**Core question:** What changes when processing moves from one database engine to distributed storage and compute?
 
-Focus on Delta Lake transactions and versioning, MERGE, schema change, incremental processing and CDC, deletes and late data, layout, quality, Unity Catalog, governance, performance, and cost.
+## Week 2 — Make It Survive Change
 
-Outcome: design, build, debug, govern, and explain a modern Databricks enterprise pipeline.
+Introduce full-reload limits, incremental watermarks, CDC inserts/updates/deletes, SCD, late facts/dimensions, duplicate delivery, idempotency, schema evolution, data quality, reconciliation, and replay.
 
-## Week 3 — Enterprise Data + AI Integration
+**Core question:** How do we maintain correctness when enterprise data continuously changes?
 
-Focus on governed structured access, document/evidence retrieval, evaluation datasets, data quality and AI correctness, metadata, authorization, lineage, security, and AI cost measurement.
+## Week 3 — Make It Scale and Govern It
 
-Outcome: demonstrate Data + AI engineering grounded in governed enterprise data, not generic chatbot development.
+Challenge the platform with larger volumes, partitioning, pruning, shuffle, skew, broadcast, AQE, small files, and Delta layout. Introduce multi-team and sensitive-data governance through Unity Catalog problems. Add Airflow when coordination becomes necessary and dbt when SQL transformation sprawl demands organization, testing, and documentation.
 
-## Week 4 — Staff Engineer Integration + Interviews
+**Core question:** How do we keep the platform performant, governable, and operable as data, workloads, and teams grow?
 
-Focus on system design, scale evolution, performance diagnosis, data and AI/data architecture, SQL/Python/PySpark practice, debugging, cost, operations, leadership articulation, and interview simulation.
+## Week 4 — Make It Production-Capable and AI-Ready
 
-Outcome: be ready to interview for Staff/Lead Data Engineer, appropriate Principal Data Engineer, Staff Data/AI Engineer, AI/Data Platform, and Data & AI Architect roles.
+Practice large backfills, failure/recovery, observability, retries, testing, CI/CD design, dev/test/prod isolation, cost/TCO, governed AI access, system design, Staff-level debugging, and interview explanation.
 
-## Weekly operating rhythm
+**Core question:** Can this system survive real production operations, and can I defend its architecture?
 
-- Begin with one architecture or business question.
-- Attempt core coding manually in Learning Mode.
-- Run or design a controlled experiment and record only measured evidence.
-- Extend the same enterprise platform rather than start an unrelated tutorial.
-- Finish with an interview explanation and update the interview journal.
+## Operating rhythm
+
+- Choose the next challenge from `enterprise-challenges/README.md`.
+- Classify it as implement/test, partially simulate, or architecture/design only.
+- Attempt core code manually; use AI assistance during delivery and review.
+- Record experiments without invented results.
+- Add technology only when the simpler design fails a stated requirement.
+- End with a debugging scenario, architecture implication, and interview-journal update.

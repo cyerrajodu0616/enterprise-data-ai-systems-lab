@@ -1,26 +1,36 @@
-# Day 1 — From SQL/Oracle Execution to Distributed Spark Execution
+# Day 1 — Define the Warehouse and Trace Distributed Execution
 
-## Primary question
+## Enterprise problem
 
-What changes when a query that once ran inside one database engine must execute across many machines?
+Design the initial daily customer-order fact from customers, accounts, orders, payments, customer status history, and a partner product feed. Define the business question and grain before writing tables. The inputs include duplicate orders and late payments.
 
-## Scenario
+## Core question
 
-The fictional enterprise must combine orders, payments, customer status history, and a partner product feed to produce a daily customer-order view. The data contains duplicates and late payments. Begin with a database-shaped solution, then inspect how the same logical work becomes scans, partitions, tasks, stages, joins, shuffle, and network movement in Spark.
+What changes when this workload moves from one SQL/Oracle database engine to distributed storage and Spark compute?
 
-## Learning path
+## Manual work
 
-Use `LEARNING_GUIDELINES.md` and the daily lesson pattern. The learner should inspect both logical and physical plans, identify wide transformations, predict data movement and failure/retry boundaries, and explain why distributed execution changes optimization. Do not pre-solve the exercise during repository initialization.
+1. State the grain, candidate facts/dimensions, business keys, and justified surrogate keys.
+2. Sketch Bronze, Silver, and Gold responsibilities.
+3. Write a first-pass SQL solution without AI-generated code.
+4. Write or outline the equivalent PySpark flow.
+5. Predict scans, partitions, tasks, stages, shuffle boundaries, join strategies, network movement, and retry boundaries.
+6. Inspect logical and physical plans when the environment is available.
+
+## Experiment proposal
+
+Compare a database-shaped implementation with a distributed implementation on a small reproducible dataset. Record capability classification and leave measurements `not run` until executed. Project how design concerns change at 10 million, 600 million, and billions of rows without presenting projections as measurements.
 
 ## Required analogy record
 
-For each comparison—full table scan versus distributed file/partition scan, index lookup versus pruning/data skipping, database hash join versus shuffle join, small lookup strategy versus broadcast, database optimizer versus Catalyst/AQE, redo/change log versus CDC, database partitioning versus distributed layout, materialized view versus managed derived data, and database transaction versus transactional lake format—record similarity, difference, distributed consequence, and where the analogy breaks.
+Compare table/file scans, indexes versus pruning/data skipping, database hash joins versus shuffle joins, lookup strategies versus broadcast, optimizer versus Catalyst/AQE, redo logs versus CDC, database partitioning versus distributed layout, materialized views versus managed derived datasets, and database versus lake-format transactions. State similarity, architectural difference, distributed consequence, and where each analogy breaks.
 
-## Day 1 deliverables
+## Deliverables
 
-- hand-written first-pass SQL and PySpark approach;
-- predicted stages, shuffle boundaries, and bottlenecks;
-- captured logical and physical plans;
-- an experiment hypothesis and unfilled measurement record;
-- failure/retry and testing notes;
-- a concise Staff-level interview explanation.
+- requirements and grain statement;
+- dimensional-model sketch;
+- manual SQL and PySpark attempt;
+- predicted and captured plans;
+- unfilled experiment record;
+- failure/retry and test strategy;
+- concise Staff-level explanation.

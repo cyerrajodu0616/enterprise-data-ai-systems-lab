@@ -1,53 +1,41 @@
 # Learning Guidelines
 
-This lab rebuilds technical judgment, not API recall. For every important technology, pattern, or optimization, work through this sequence:
+The unit of learning is a difficult enterprise problem, not a product feature. For every challenge answer:
 
-1. What problem existed before this mechanism?
-2. What is the simplest useful mental model?
-3. How does it work internally?
-4. Which physical resource or bottleneck changes: CPU, memory, disk I/O, network, serialization, metadata, or parallelism?
-5. Why should it perform better?
-6. What trade-off does it introduce?
-7. When does it stop working?
-8. What older database or data-engineering concept does it resemble?
-9. Where is that analogy inaccurate?
-10. How can the principle transfer to another problem?
-11. How can the claim be proven experimentally?
+1. What business or engineering problem are we solving?
+2. What breaks in the current or simple design?
+3. Why does it break internally?
+4. Which physical resource becomes the bottleneck: CPU, memory, disk I/O, network, serialization, metadata, or parallelism?
+5. What is the simplest credible solution?
+6. Why should it perform better?
+7. How can we prove that experimentally?
+8. What complexity did we introduce?
+9. What are the operational consequences?
+10. What does it cost?
+11. What happens at 10x scale?
+12. How would another platform solve the same problem?
+13. What principle generalizes to another problem?
 
-Never accept an unsupported statement such as “a broadcast join is faster.” Identify what data movement changes, the workload and size assumptions, executor-memory risk, the failure boundary, and the measurements needed to validate it.
+For every mechanism, also identify its simplest mental model, internals, trade-off, failure boundary, older database analogy, and where that analogy breaks. Never accept “broadcast join is faster” without explaining physical data movement, workload conditions, executor-memory risk, and the measurements needed to test it.
 
-## Evidence standard
+## Technology admission rule
 
-- State a falsifiable hypothesis before running an experiment.
-- Record data shape and size, platform/runtime, compute configuration, relevant settings, code or query version, and constraints.
-- Capture runtime, scan volume, shuffle bytes, task distribution, spill, file count, CPU/memory indicators, and cost when measurable and relevant.
-- Separate observations from explanations and architectural implications.
-- Never invent results. Mark experiments `not run` until evidence exists.
-- Preserve surprising or negative results; they often reveal the real boundary of a technique.
+Every technology must answer: **What problem did this solve that the simpler architecture could not?** Complexity and cost must earn their place.
 
-## Scale progression
+## Evidence and scale
 
-Run the same conceptual workload at a small local scale, a medium scale, and a larger distributed scale when infrastructure permits. Then reason explicitly—without fabricating measurements—about changes required at 10 million, 600 million, and several billion rows.
+- State a falsifiable hypothesis before execution.
+- Record dataset shape/size, runtime, infrastructure, settings, code revision, plan, and constraints.
+- Record only observed runtime, scans, shuffle, task distribution, spill, files, resource indicators, and cost.
+- Label results `not run` until executed.
+- Separate measured results from hypothetical scale projections.
+- Progress from small local data to medium and larger distributed experiments when economical, then reason explicitly about 10 million, 600 million, and billions of rows.
+- Preserve negative or surprising results.
 
-## Analogy discipline
+## Capability classification
 
-Traditional database knowledge is a starting point, not a translation table. Every comparison must state the conceptual similarity, architectural difference, effect of distributed compute, and point where the analogy breaks.
+For each challenge record one status: **implement and test**, **partially simulate**, or **architecture/design only**. Verify platform capabilities in the current Databricks Free Edition environment; do not infer or fabricate availability.
 
-## Daily lesson pattern
+## Daily challenge pattern
 
-1. Business or engineering problem
-2. Existing mental model
-3. New concept
-4. Internals
-5. Old-system analogy
-6. Where the analogy breaks
-7. Hands-on coding exercise
-8. Performance hypothesis
-9. Experiment
-10. Measurements
-11. Failure analysis
-12. Cost implications
-13. Operational implications
-14. Generalization to another problem
-15. Interview explanation
-16. Reflection
+Problem -> current design -> failure -> internals -> bottleneck -> simplest solution -> manual exercise -> hypothesis -> experiment -> measurements -> diagnosis -> trade-offs -> operations -> cost -> 10x scale -> platform comparison -> generalization -> interview explanation -> reflection.
