@@ -2,7 +2,7 @@
 
 This personal project develops strong AI-assisted engineering while preserving independent coding, debugging, and reasoning.
 
-## Manual Practice
+## Manual Practice Mode
 
 1. Read the enterprise problem before seeing a generated solution.
 2. Write the core SQL, Python, or PySpark manually.
@@ -12,7 +12,7 @@ This personal project develops strong AI-assisted engineering while preserving i
 
 Regularly work without AI assistance to remain ready for interviews and production debugging. Prioritize SQL, Python, PySpark, broken-pipeline repair, execution plans, and performance reasoning.
 
-## AI-Assisted Engineering
+## AI-Assisted Engineering Mode
 
 Codex/Claude-style assistance is allowed for larger enterprise-project delivery. Understand generated code, add appropriate tests, explain important decisions, measure performance claims, and retain ownership of architecture.
 

@@ -1,22 +1,40 @@
 # Learning Guidelines
 
-The unit of learning is a difficult enterprise problem, not a product feature. For every challenge answer:
+The learner is an experienced data engineer refreshing and extending technical depth. The unit of learning is a difficult enterprise problem, not a product feature.
 
-1. What business or engineering problem are we solving?
-2. What breaks in the current or simple design?
-3. Why does it break internally?
-4. Which physical resource becomes the bottleneck: CPU, memory, disk I/O, network, serialization, metadata, or parallelism?
-5. What is the simplest credible solution?
-6. Why should it perform better?
-7. How can we prove that experimentally?
-8. What complexity did we introduce?
-9. What are the operational consequences?
-10. What does it cost?
-11. What happens at 10x scale?
-12. How would another platform solve the same problem?
-13. What principle generalizes to another problem?
+## Learning sequence
 
-For every mechanism, also identify its simplest mental model, internals, trade-off, failure boundary, older database analogy, and where that analogy breaks. Never accept “broadcast join is faster” without explaining physical data movement, workload conditions, executor-memory risk, and the measurements needed to test it.
+### Refresh
+
+Reactivate relevant SQL, Oracle, traditional-database, and prior data-engineering knowledge. Do not restart from beginner assumptions.
+
+### Internals
+
+Explain physical work across CPU, memory, disk, network, serialization, metadata, processes, workers, parallelism, partitions, and files. When two approaches appear to use similar data and infrastructure, identify what work was avoided, moved, parallelized, precomputed, cached, pruned, indexed, broadcast, or reorganized.
+
+### Modern approach
+
+Explain how distributed and cloud systems solve the same class of problem. Use older database concepts as learning analogies, always stating similarity, architectural difference, and where the analogy breaks.
+
+### Industry guidance
+
+Identify current authoritative guidance in this order: official documentation or specification, authoritative book or paper, then credible engineering material. A large company's design is not automatically an industry standard.
+
+### Industry case study
+
+Choose real cases only when relevant. Record the original source, publication date, reported scale, problem, constraints, architecture, rationale, operations, trade-offs, company-specific elements, generalized principle, and applicability to this lab. Never invent details or scale.
+
+### Build, break, and measure
+
+Implement the concept, then deliberately introduce scale, skew, bad data, duplicates, schema change, late data, failures, backfills, permission problems, or regressions. Measure plans, runtime, scans, shuffle, spill, task distribution, files, latency, correctness, and cost where available. Never invent results.
+
+### Generalize and interview
+
+Ask where the principle applies elsewhere. Explain it briefly, technically, as a production incident, and as a Staff-level design decision.
+
+## Challenge questions
+
+For every challenge ask what problem exists, what breaks, why it breaks internally, which resource constrains it, the simplest credible solution, why it should work, how to prove it, complexity/operations/cost introduced, 10x-scale behavior, another platform's approach, and the generalized principle.
 
 ## Technology admission rule
 
@@ -25,17 +43,26 @@ Every technology must answer: **What problem did this solve that the simpler arc
 ## Evidence and scale
 
 - State a falsifiable hypothesis before execution.
-- Record dataset shape/size, runtime, infrastructure, settings, code revision, plan, and constraints.
-- Record only observed runtime, scans, shuffle, task distribution, spill, files, resource indicators, and cost.
+- Record dataset shape/size, runtime, infrastructure, settings, code revision, execution plan, and constraints.
 - Label results `not run` until executed.
-- Separate measured results from hypothetical scale projections.
-- Progress from small local data to medium and larger distributed experiments when economical, then reason explicitly about 10 million, 600 million, and billions of rows.
-- Preserve negative or surprising results.
+- Separate measured results from hypothetical projections.
+- Progress economically from small to distributed experiments, then reason explicitly about 10 million, hundreds of millions, and billions of rows.
+- Preserve negative and surprising results.
 
 ## Capability classification
 
-For each challenge record one status: **implement and test**, **partially simulate**, or **architecture/design only**. Verify platform capabilities in the current Databricks Free Edition environment; do not infer or fabricate availability.
+For each challenge record **implement and test**, **partially simulate**, or **architecture/design only**. Verify current Databricks Free Edition capabilities rather than inferring them.
 
-## Daily challenge pattern
+## Evidence hierarchy
 
-Problem -> current design -> failure -> internals -> bottleneck -> simplest solution -> manual exercise -> hypothesis -> experiment -> measurements -> diagnosis -> trade-offs -> operations -> cost -> 10x scale -> platform comparison -> generalization -> interview explanation -> reflection.
+`Durable concept -> mental model`
+
+`Official documentation/specification -> current behavior`
+
+`Industry case study -> one organization's response to a real problem`
+
+`Our experiment -> evidence for our workload`
+
+`Architecture decision -> requirements + evidence + constraints`
+
+Do not confuse these evidence types.

@@ -46,8 +46,12 @@ Never invent benchmark results. Separate measured observations from scale projec
 - `transformations/dbt/` — SQL transformation, testing, and documentation artifacts.
 - `databricks/` — Spark, Delta, performance, CDC, Unity Catalog, and governance mechanisms.
 - `experiments/` — reproducible experiment definitions and measured results.
+- `industry-case-studies/` — source-backed cases organized by engineering problem.
 - `ai-integration/` — governed enterprise data for AI.
 - `snowflake/` — later workload-based comparison.
 - `interview-journal/` — interview evidence and targeted follow-up.
+- `DAILY_LESSON_TEMPLATE.md` — the reusable lesson structure.
+- `REFERENCES.md` — durable foundations, current official documentation, and curated engineering sources.
+- `RESUME_PROTOCOL.md` — deterministic continuation from a new session.
 
-Start with `ROADMAP.md`, `CURRENT_SESSION.md`, the challenge catalog, and the Day 1 proposal.
+Start with `RESUME_PROTOCOL.md`, `CURRENT_SESSION.md`, `ROADMAP.md`, the current challenge, and the Day 1 proposal.

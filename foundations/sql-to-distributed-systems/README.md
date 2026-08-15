@@ -1,36 +1,50 @@
-# Day 1 — Define the Warehouse and Trace Distributed Execution
+# Day 1 — From SQL/Oracle Execution to Distributed Spark Execution
 
-## Enterprise problem
+Day 1 is prepared but intentionally unsolved. Reason before implementation; do not begin with PySpark syntax.
 
-Design the initial daily customer-order fact from customers, accounts, orders, payments, customer status history, and a partner product feed. Define the business question and grain before writing tables. The inputs include duplicate orders and late payments.
+## 1. Problem
 
-## Core question
+Produce a daily customer-order fact from customers, accounts, orders, payments, customer-status history, and a partner product feed containing duplicates and late payments. Define the business question and grain before tables.
 
-What changes when this workload moves from one SQL/Oracle database engine to distributed storage and Spark compute?
+## 2. Refresh
 
-## Manual work
+Reactivate the SQL/Oracle model: where table and index blocks reside, how access paths and joins are selected, what executes inside one database engine, and how work uses CPU, buffer/cache memory, disk, temporary space, and parallel query processes.
 
-1. State the grain, candidate facts/dimensions, business keys, and justified surrogate keys.
-2. Sketch Bronze, Silver, and Gold responsibilities.
-3. Write a first-pass SQL solution without AI-generated code.
-4. Write or outline the equivalent PySpark flow.
-5. Predict scans, partitions, tasks, stages, shuffle boundaries, join strategies, network movement, and retry boundaries.
-6. Inspect logical and physical plans when the environment is available.
+## 3. Internals
 
-## Experiment proposal
+Before coding, predict where data resides, what can execute locally, what crosses workers, how files become partitions/tasks/stages, where lazy execution ends, and which operations create network shuffle or retry boundaries.
 
-Compare a database-shaped implementation with a distributed implementation on a small reproducible dataset. Record capability classification and leave measurements `not run` until executed. Project how design concerns change at 10 million, 600 million, and billions of rows without presenting projections as measurements.
+## 4. Modern implementation
 
-## Required analogy record
+Map the logical workload to distributed Spark only after the prediction. Compare scans, pruning, joins, stages, tasks, shuffle, and failure recovery without claiming database concepts are exact equivalents.
 
-Compare table/file scans, indexes versus pruning/data skipping, database hash joins versus shuffle joins, lookup strategies versus broadcast, optimizer versus Catalyst/AQE, redo logs versus CDC, database partitioning versus distributed layout, materialized views versus managed derived datasets, and database versus lake-format transactions. State similarity, architectural difference, distributed consequence, and where each analogy breaks.
+## 5. Industry guidance
 
-## Deliverables
+Consult current official Spark and Databricks documentation during the lesson; record the exact version and source used.
+
+## 6. Industry case study
+
+Select a source-backed large-scale processing case only if it illuminates Day 1. Record reported facts without copying the architecture blindly.
+
+## 7. Learner decision
+
+Predict the grain, model, execution boundaries, data movement, bottlenecks, and simplest implementation before seeing a solution.
+
+## 8. Coding lab
+
+Manually write a first-pass SQL solution, then outline or implement the PySpark equivalent.
+
+## 9–16. Experiment through reflection
+
+Form a small reproducible hypothesis; record measurements as `not run`; deliberately introduce one scale or data-shape problem; explain observed evidence; generalize the principle; give conceptual, technical, debugging, and Staff-level explanations; identify the architecture decision improved; and record the changed mental model.
+
+## Required outputs
 
 - requirements and grain statement;
 - dimensional-model sketch;
 - manual SQL and PySpark attempt;
-- predicted and captured plans;
-- unfilled experiment record;
+- predicted and captured logical/physical plans;
+- experiment record with no fabricated results;
 - failure/retry and test strategy;
-- concise Staff-level explanation.
+- architecture-bridge note;
+- interview explanation.
