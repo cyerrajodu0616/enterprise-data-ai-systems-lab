@@ -18,3 +18,11 @@ For each bridge item, record:
 - observed evidence, including limitations;
 - effect on performance, cost, governance, security, and operations;
 - whether the architecture decision is retained, refined, or rejected.
+
+## Forward-Deployed Builds boundary
+
+Forward-Deployed Builds own discovery artifacts, prototypes, implementations, integrations, failure observations, evaluations, measurements, and production-readiness evidence. They may reveal that an assumption is wrong or that an alternative deserves consideration.
+
+The Architecture Playbook remains the source of truth for architecture decisions. A successful prototype or lab experiment does not automatically become an architecture decision. Transfer only the evidence, constraints, unknowns, and candidate implications for consideration through:
+
+`Architecture Question -> Technical Hypothesis -> Lab Experiment or Build -> Evidence -> Architecture Refinement`
