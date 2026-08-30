@@ -5,7 +5,10 @@
 - Week/day:
 - Enterprise challenge:
 - Capability classification:
-- Status: not started
+- Conceptual Learning: INCOMPLETE
+- Coding Practice: DEFERRED
+- Experiment: DEFERRED
+- Deferred lab IDs: record in `LAB_BACKLOG.md`, or `none`
 
 ## 1. Problem
 ## 2. Refresh
@@ -47,3 +50,5 @@ Before marking the day complete, create `daily-artifacts/day-XX/` from `daily-ar
 - `recap.html` — portable visual recap linking to the source artifacts.
 
 Update `CURRENT_SESSION.md`, then commit and push the package. A day is not `complete` until this durable package exists or the session record explains why an artifact is not applicable.
+
+Conceptual completion may advance independently of deferred coding or experiments unless measured evidence is an explicit prerequisite. Never present a deferred activity as completed evidence.
