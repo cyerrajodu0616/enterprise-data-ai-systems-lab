@@ -36,6 +36,14 @@ Manual Practice preserves independent SQL, Python, PySpark, debugging, and execu
 
 Never invent benchmark results. Separate measured observations from scale projections and architecture reasoning.
 
+## Three practical layers
+
+1. **Technical Fundamentals** develop coding fluency, data-platform internals, and implementation judgment.
+2. **Experiments and Evidence** test technical hypotheses through prediction, controlled execution, observation, and explanation.
+3. **Forward-Deployed Builds** test whether an ambiguous customer problem can become a working, integrated, production-oriented system under explicit constraints.
+
+The layers reinforce one another but are not interchangeable: a coding challenge tests implementation ability, an experiment tests a technical hypothesis, and a Forward-Deployed Build tests delivery of a measurable customer outcome.
+
 ## Repository map
 
 - `enterprise-challenges/` — primary learning sequence and challenge catalog.
@@ -48,6 +56,7 @@ Never invent benchmark results. Separate measured observations from scale projec
 - `experiments/` — reproducible experiment definitions and measured results.
 - `industry-case-studies/` — source-backed cases organized by engineering problem.
 - `daily-artifacts/` — committed end-of-day lessons, quizzes, implementations, evidence, and HTML recaps.
+- `forward-deployed-builds/` — discovery-to-production builds driven by ambiguous customer problems.
 - `ai-integration/` — governed enterprise data for AI.
 - `snowflake/` — later workload-based comparison.
 - `interview-journal/` — interview evidence and targeted follow-up.

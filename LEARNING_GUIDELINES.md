@@ -2,6 +2,16 @@
 
 The learner is an experienced data engineer refreshing and extending technical depth. The unit of learning is a difficult enterprise problem, not a product feature.
 
+## Three-layer learning system
+
+- **Technical Fundamentals:** learn and practice the mechanism.
+- **Experiments and Evidence:** predict, run, observe, explain, and generalize a technical hypothesis.
+- **Forward-Deployed Builds:** discover an ambiguous customer problem, define measurable success, build the simplest viable system, integrate and break it, evaluate it, and prepare it for production constraints.
+
+Forward-Deployed Builds must begin with an intentionally incomplete request. Classify every material statement as **Known**, **Assumption**, **Open Question**, or **Hypothesis**. Do not reveal a final architecture before learner discovery and alternatives analysis.
+
+Before adding major technology, ask: **What is the simplest solution that satisfies the business requirement?** Consider SQL, an API, deterministic logic, full-text or existing enterprise search, and a simple LLM call before adding RAG, vectors, agents, MCP, multiple models, queues, Kubernetes, or other complexity.
+
 ## Learning sequence
 
 ### Refresh
@@ -66,3 +76,13 @@ For each challenge record **implement and test**, **partially simulate**, or **a
 `Architecture decision -> requirements + evidence + constraints`
 
 Do not confuse these evidence types.
+
+## Forward-deployed evidence
+
+For every significant build use `Predict -> Run -> Observe -> Explain -> Generalize` for failure experiments. Separate:
+
+- **System correctness:** deterministic behavior, integration contracts, security, reliability, and operational correctness.
+- **Model quality:** structured-output validity, retrieval and answer quality, tool selection, hallucination/failure classification, and human review where needed.
+- **Business outcome:** whether the system improves the explicitly defined customer success metric.
+
+Never infer business ROI from a technically successful prototype.

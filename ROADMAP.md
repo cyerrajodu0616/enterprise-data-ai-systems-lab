@@ -158,6 +158,19 @@ Use `DAILY_LESSON_TEMPLATE.md`: Refresh -> Internals -> Modern Implementation ->
 
 End by committing a durable package under `daily-artifacts/day-XX/` containing the completed lesson, attempted quiz and reviewed answers, implementation and tests, experiment and measured results, and a self-contained `recap.html`. Follow `DAILY_ARTIFACT_GUIDELINES.md`; never fabricate results or publish solutions before the learner's attempt.
 
+## Forward-Deployed Build milestones
+
+Forward-Deployed Builds consume the roadmap; they do not replace focused fundamentals days. See `forward-deployed-builds/README.md` for completion criteria and the full dependency map.
+
+- **After Week 2:** Build 1 — Enterprise Data/API Service. Prerequisites: requirements, grain, source modeling, Bronze/Silver/Gold boundaries, SQL/Python practice, validation, and tests. Start only after Day 14 is reviewed.
+- **After Week 4:** Build 2 — AI-Assisted Enterprise Query. Prerequisites: a non-AI service baseline, incremental correctness, execution/performance evidence, and an explicit value hypothesis for an LLM.
+- **During Week 8 after Day 51:** Build 3 — Enterprise Knowledge Assistant. Evaluate direct access, full-text search, and long context before embeddings or RAG.
+- **After Week 8:** Build 4 — Enterprise Agent Workflow, only when multiple tools and stateful coordination are justified.
+- **After Build 4:** Build 5 — Production Deployment of one earlier system, driven by real deployment requirements rather than a DevOps checklist.
+- **Capstone:** Build 6 — Ambiguous Customer Challenge. The learner receives the scenario, not the architecture, and must lead discovery through measurement and defense.
+
+Each milestone reuses fundamentals, coding, experiments, and enterprise-project artifacts. Do not begin Build 1 while `CURRENT_SESSION.md` remains before Week 2 completion.
+
 ## Roadmap deviations
 
 When an interview, experiment, missing prerequisite, technology change, or challenge justifies deviation, record the reason, evidence, effect on sequencing, and updates made to `CURRENT_SESSION.md`. Do not silently drift.
