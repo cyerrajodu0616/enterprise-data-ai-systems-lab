@@ -86,3 +86,15 @@ For every significant build use `Predict -> Run -> Observe -> Explain -> General
 - **Business outcome:** whether the system improves the explicitly defined customer success metric.
 
 Never infer business ROI from a technically successful prototype.
+
+## Day completion and deferred evidence
+
+A Technical Sharpness day tracks three independent states:
+
+- **Conceptual Learning:** `COMPLETE` or `INCOMPLETE`.
+- **Coding Practice:** `COMPLETE`, `DEFERRED`, or `NOT REQUIRED`.
+- **Experiment:** `COMPLETE`, `DEFERRED`, or `NOT REQUIRED`.
+
+Deferred coding or experiments must create or update an entry in `LAB_BACKLOG.md`. A day may advance when its conceptual objectives and reasoning exercises are complete unless a specific experiment is an explicit prerequisite. Evidence required for an architecture decision remains unresolved until the experiment is actually executed.
+
+When a deferred experiment is executed, preserve its original hypothesis; record the environment, configuration, and dataset; separate actual observations from interpretation; link the artifacts; mark the lab `DONE`; and revise earlier conclusions when evidence contradicts them.

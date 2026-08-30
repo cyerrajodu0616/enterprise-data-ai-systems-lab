@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day 01 Technical Sharpness Recap</title>
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; line-height: 1.6; }
+    body { max-width: 72rem; margin: auto; padding: 2rem; }
+    header, nav, section { margin-block: 1.5rem; }
+    nav { display: flex; flex-wrap: wrap; gap: .45rem 1rem; }
+    code, .flow { font-family: ui-monospace, monospace; }
+    .flow { padding: 1rem; border: 1px solid currentColor; border-radius: .5rem; overflow-wrap: anywhere; }
+    .status { padding: .75rem 1rem; border-inline-start: .35rem solid #c28b00; background: color-mix(in srgb, CanvasText 7%, Canvas); }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid currentColor; padding: .6rem; text-align: left; vertical-align: top; }
+    a { text-underline-offset: .2em; }
+    @media (max-width: 40rem) { body { padding: 1rem; } table { display: block; overflow-x: auto; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Day 01 — SQL/Oracle Execution to Distributed Spark Execution</h1>
+    <p><strong>Conceptual learning:</strong> COMPLETE · <strong>Reasoning:</strong> COMPLETE · <strong>Coding:</strong> DEFERRED · <strong>Experiments:</strong> DEFERRED</p>
+    <p class="status"><strong>Evidence boundary:</strong> No Spark job or lab measurement was run. Plans, task waves, skew, spill, recovery, and retry behavior below are reasoned hypotheses—not observed results.</p>
+  </header>
+  <nav aria-label="Source artifacts">
+    <a href="lesson.md">Lesson</a><a href="quiz.md">Quiz attempt</a>
+    <a href="quiz-review.md">Quiz review</a><a href="experiment.md">Experiment</a>
+    <a href="results.md">Results</a><a href="implementation/README.md">Implementation</a>
+    <a href="../../LAB_BACKLOG.md">Lab backlog</a>
+  </nav>
+  <main>
+    <section>
+      <h2>Mental-model change</h2>
+      <p>The starting model was one database engine selecting access paths and using CPU, buffer/cache memory, disk, temporary space, and parallel processes. Spark distributes physical work and schedules it in units:</p>
+      <p class="flow">Data → Partitions → Tasks → Stages → Executors / execution slots</p>
+      <p>Lazy transformations describe work. An action requires a result and triggers execution. When runnable tasks exceed available slots, tasks may run in scheduling waves. Exact parallelism was not observed.</p>
+    </section>
+    <section>
+      <h2>Narrow versus wide work</h2>
+      <table>
+        <thead><tr><th>Narrow dependency</th><th>Wide dependency</th></tr></thead>
+        <tbody><tr><td>Each output partition can be computed from a limited input partition dependency. Scan, filter, and projection can remain partition-local without required record redistribution.</td><td>Records must be reorganized across partitions. Grouping equal keys commonly introduces Exchange and shuffle.</td></tr></tbody>
+      </table>
+      <p class="flow">records across input partitions → grouping requirement → hash partition by key → Exchange → network shuffle → new shuffle partitions</p>
+      <p><strong>Refinement:</strong> “One-to-one” describes useful dependency intuition, not unchanged row counts or a guaranteed physical plan. Confirm operators with <code>explain()</code>.</p>
+    </section>
+    <section>
+      <h2>Skew and the straggler</h2>
+      <p class="flow">hot key (<code>c-hot</code>) → oversized shuffle partition → one expensive task → straggler → stage waits for slow task</p>
+      <p>Adding another executor does not necessarily split work already concentrated in one partition. Evidence would include generated key distribution, per-task or partition sizes, task durations, spill, and uneven completion. None was measured.</p>
+    </section>
+    <section>
+      <h2>Recovery and retry safety</h2>
+      <p class="flow">recoverable intermediate loss → lineage → rerun required parent work → recreate missing output</p>
+      <p>Spark can use lineage to recompute recoverable output when dependencies and sources remain available. This is conditional, not a claim that every failure avoids broader restart.</p>
+      <p class="flow">retryable distributed computation × non-idempotent external side effect = duplicate business-action risk</p>
+      <p>Deterministic computation is safer to recompute. External effects require idempotency or deduplication. LAB-005 will use only a safe synthetic sink—never a real payment or consequential system.</p>
+    </section>
+    <section>
+      <h2>Learner reasoning and review</h2>
+      <p>The learner correctly identified locality for filters/projections, Exchange as a network boundary, hot-key concentration, lineage-based recovery, and duplicate-action risk under retry. The review refined terminology and separated confident prediction from plan/runtime confirmation. See the linked quiz attempt and review for the preserved progression.</p>
+    </section>
+    <section>
+      <h2>Evidence and outstanding labs</h2>
+      <ul>
+        <li>LAB-001 — Narrow vs Wide Transformation</li>
+        <li>LAB-002 — Task Waves and Parallelism</li>
+        <li>LAB-003 — Shuffle Skew</li>
+        <li>LAB-004 — Lineage and Recomputation</li>
+        <li>LAB-005 — Retry and Side-Effect Safety</li>
+      </ul>
+      <p><strong>Observed evidence:</strong> none. <strong>Measurements:</strong> not run. Expected mechanisms remain hypotheses in the repository-level lab backlog.</p>
+    </section>
+    <section>
+      <h2>Interview and architecture bridge</h2>
+      <p>Before choosing a Spark optimization, identify where data moves, how work is partitioned, whether one partition is indivisible or skewed, and what retry can repeat. Architecture claims that depend on performance or recovery evidence remain unresolved until the labs execute.</p>
+    </section>
+    <section>
+      <h2>Next step</h2>
+      <p><strong>Week 1, Day 2 — Join Internals.</strong> Study nested-loop, hash, and sort/merge joins; indexes and access paths; Spark broadcast and shuffle joins; network movement; strategy selection; and performance implications. Day 2 has not started.</p>
+    </section>
+  </main>
+</body>
+</html>
