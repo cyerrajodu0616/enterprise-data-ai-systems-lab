@@ -1,30 +1,27 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Day XX Technical Sharpness Recap</title>
+  <title>Day XX Technical Sharpness Interactive Recap</title>
   <style>
-    :root { color-scheme: light dark; font-family: system-ui, sans-serif; line-height: 1.5; }
-    body { max-width: 72rem; margin: auto; padding: 2rem; }
-    nav, section { margin-block: 1.5rem; }
-    code { font-family: ui-monospace, monospace; }
+    :root{--bg:#f4f7fb;--panel:#fff;--panel2:#edf3fb;--text:#142033;--muted:#58677c;--line:#cfdae8;--accent:#2855d9;--shadow:0 12px 35px rgba(27,45,79,.09);font-family:Inter,ui-sans-serif,system-ui,sans-serif;line-height:1.58;color-scheme:light}[data-theme="dark"]{--bg:#0d1422;--panel:#151f30;--panel2:#1b2940;--text:#eef4ff;--muted:#acbad0;--line:#33435c;--accent:#8eacff;--shadow:0 14px 40px rgba(0,0,0,.25);color-scheme:dark}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text)}a{color:var(--accent);text-underline-offset:.2em}button,input{font:inherit}.skip{position:absolute;left:-9999px}.skip:focus{left:.75rem;top:.75rem;z-index:99;background:var(--panel);padding:.7rem}.hero{background:linear-gradient(135deg,#183a9e,#2855d9 58%,#167c72);color:#fff;padding:clamp(2rem,5vw,4rem) max(1rem,calc((100vw - 76rem)/2))}.hero h1{font-size:clamp(2rem,5vw,3.8rem);margin:.35rem 0}.chips,.modes,.tools,.source-links{display:flex;flex-wrap:wrap;gap:.5rem}.chip{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.14);padding:.35rem .65rem;border-radius:99px;font-weight:700}.topbar{position:sticky;top:0;z-index:10;background:var(--panel);border-bottom:1px solid var(--line)}.topbar-inner{max-width:76rem;margin:auto;padding:.65rem 1rem;display:flex;gap:.5rem;overflow:auto}.topbar a,.btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:.55rem .75rem;border-radius:.55rem;text-decoration:none;font-weight:750;cursor:pointer;white-space:nowrap}main{max-width:76rem;margin:auto;padding:1rem 1rem 4rem}.controls,.section{background:var(--panel);border:1px solid var(--line);border-radius:1rem;box-shadow:var(--shadow);padding:1rem;margin:1rem 0}.controls{display:grid;gap:.8rem}.mode[aria-pressed="true"]{background:var(--accent);color:var(--bg)}label{font-weight:800}input{width:100%;padding:.7rem;border:1px solid var(--line);border-radius:.55rem;background:var(--bg);color:var(--text)}.section{scroll-margin-top:5rem;padding:clamp(1rem,3vw,2rem)}.section h2{margin-top:0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:1rem}.card,details{background:var(--panel2);border:1px solid var(--line);border-radius:.75rem;padding:1rem}summary{font-weight:850;cursor:pointer}.hidden-section{display:none!important}.no-results{display:none;text-align:center}.no-results.show{display:block}.sources{max-width:76rem;margin:0 auto 3rem;padding:0 1rem}.source-links a{border:1px solid var(--line);padding:.5rem;border-radius:.5rem;text-decoration:none}:focus-visible{outline:3px solid var(--accent);outline-offset:2px}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
   </style>
 </head>
 <body>
-  <header><h1>Day XX Technical Sharpness Recap</h1><p>Status: not started</p></header>
-  <nav aria-label="Source artifacts">
-    <a href="lesson.md">Lesson</a> · <a href="quiz.md">Quiz</a> ·
-    <a href="quiz-review.md">Quiz review</a> · <a href="experiment.md">Experiment</a> ·
-    <a href="results.md">Results</a> · <a href="implementation/README.md">Implementation</a>
-  </nav>
-  <main>
-    <section><h2>Problem and mental-model change</h2><p>Complete after the lesson.</p></section>
-    <section><h2>Internals and visual explanation</h2><p>Complete after the lesson.</p></section>
-    <section><h2>Quiz and implementation</h2><p>Complete after review.</p></section>
-    <section><h2>Evidence and debugging</h2><p>No experiment has run.</p></section>
-    <section><h2>Interview and architecture bridge</h2><p>Complete after reflection.</p></section>
-    <section><h2>Next step</h2><p>Update from the roadmap and current session.</p></section>
+  <a class="skip" href="#main-content">Skip to study content</a>
+  <header class="hero" id="overview"><p>Technical Sharpness · Week X · Day XX</p><h1>Replace with the day topic</h1><p>Replace with the durable mental-model change after reviewed source artifacts are complete.</p><div class="chips"><span class="chip">Conceptual: INCOMPLETE</span><span class="chip">Coding: DEFERRED</span><span class="chip">Experiment: DEFERRED</span><span class="chip">Evidence: NONE</span></div></header>
+  <nav class="topbar" aria-label="Study sections"><div class="topbar-inner"><a href="#learn">Learn</a><a href="#diagnose">Diagnose</a><a href="#interview">Interview</a><a href="#next">Next</a><button class="btn" id="theme" type="button">Theme</button></div></nav>
+  <main id="main-content">
+    <section class="controls" aria-label="Study controls"><div class="modes" role="group" aria-label="Study mode"><button class="btn mode" data-mode="all" aria-pressed="true">All</button><button class="btn mode" data-mode="learn" aria-pressed="false">Learn</button><button class="btn mode" data-mode="diagnose" aria-pressed="false">Diagnose</button><button class="btn mode" data-mode="interview" aria-pressed="false">Interview</button></div><div class="tools"><button class="btn" id="expand" type="button">Expand all</button><button class="btn" id="collapse" type="button">Collapse all</button></div><label for="search">Search this lesson</label><input id="search" type="search" placeholder="Search concepts, evidence, vocabulary…"></section><p class="no-results" id="no-results" role="status">No sections match.</p>
+    <section class="section" id="learn" data-modes="learn"><h2>Learn</h2><p>Replace only after lesson sources are completed and reviewed.</p><div class="grid"><details open><summary>Scenario and learner reasoning</summary><p>Preserve the learner's actual reasoning.</p></details><details><summary>Correction and generalized principle</summary><p>Add verified refinement without rewriting history.</p></details></div></section>
+    <section class="section" id="diagnose" data-modes="diagnose"><h2>Diagnose</h2><details open><summary>Stop, assess, then answer</summary><p>Observation → Known → Assumption → Missing Evidence → Inspect / Ask → Conditional Diagnosis → Recommendation → Validation</p></details><details><summary>Evidence and failure lesson</summary><p>Clearly distinguish prediction, measured evidence, and deferred work.</p></details></section>
+    <section class="section" id="interview" data-modes="interview"><h2>Interview</h2><details open><summary>Vocabulary upgrade</summary><p>Replace imprecise learner terminology with Staff/Lead phrasing while preserving reasoning.</p></details><details><summary>Practice answer</summary><p>Add the reviewed interview answer.</p></details></section>
+    <section class="section" id="next" data-modes="all learn diagnose interview"><h2>Next step</h2><p>Use the roadmap and current session. Do not start the next day inside this recap.</p></section>
   </main>
+  <aside class="sources"><details><summary>Source files and evidence provenance</summary><div class="source-links"><a href="lesson.md">Lesson</a><a href="quiz.md">Quiz</a><a href="quiz-review.md">Quiz review</a><a href="experiment.md">Experiment</a><a href="results.md">Results</a><a href="implementation/README.md">Implementation</a></div></details></aside>
+  <script>
+    (()=>{const root=document.documentElement,sections=[...document.querySelectorAll('.section')],modes=[...document.querySelectorAll('.mode')],search=document.querySelector('#search'),empty=document.querySelector('#no-results');let mode='all';try{const saved=localStorage.getItem('recap-theme');if(saved)root.dataset.theme=saved;else if(matchMedia('(prefers-color-scheme: dark)').matches)root.dataset.theme='dark'}catch(e){}document.querySelector('#theme').addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem('recap-theme',root.dataset.theme)}catch(e){}});function filter(){const q=search.value.trim().toLowerCase();let shown=0;sections.forEach(s=>{const allowed=mode==='all'||s.dataset.modes.split(' ').includes(mode)||s.dataset.modes==='all',match=!q||s.textContent.toLowerCase().includes(q);s.classList.toggle('hidden-section',!(allowed&&match));if(allowed&&match)shown++});empty.classList.toggle('show',shown===0)}modes.forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;modes.forEach(x=>x.setAttribute('aria-pressed',String(x===b)));filter()}));search.addEventListener('input',filter);document.querySelector('#expand').addEventListener('click',()=>document.querySelectorAll('details').forEach(d=>d.open=true));document.querySelector('#collapse').addEventListener('click',()=>document.querySelectorAll('details').forEach(d=>d.open=false))})();
+  </script>
 </body>
 </html>
