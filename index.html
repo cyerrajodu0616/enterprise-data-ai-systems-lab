@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Mobile-friendly study recaps from the Enterprise Data & AI Systems Lab.">
+  <title>Enterprise Data &amp; AI Systems Lab — Study Recaps</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f7fb;
+      --panel: #ffffff;
+      --text: #142033;
+      --muted: #58677c;
+      --line: #cfdae8;
+      --accent: #2855d9;
+      --shadow: 0 12px 35px rgba(27, 45, 79, .09);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1422;
+        --panel: #151f30;
+        --text: #eef4ff;
+        --muted: #acbad0;
+        --line: #33435c;
+        --accent: #8eacff;
+        --shadow: 0 14px 40px rgba(0, 0, 0, .25);
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); }
+    header {
+      background: linear-gradient(135deg, #183a9e, #2855d9 58%, #167c72);
+      color: #fff;
+      padding: clamp(2.25rem, 7vw, 5rem) max(1rem, calc((100vw - 72rem) / 2));
+    }
+    header p { max-width: 48rem; margin-bottom: 0; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .78rem; font-weight: 800; opacity: .85; }
+    h1 { margin: .45rem 0 .8rem; font-size: clamp(2rem, 6vw, 4rem); line-height: 1.05; }
+    main { max-width: 72rem; margin: auto; padding: clamp(1rem, 4vw, 2rem) 1rem 4rem; }
+    .intro { color: var(--muted); max-width: 60rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: 1rem; margin-top: 1.5rem; }
+    .card {
+      display: flex;
+      flex-direction: column;
+      min-height: 15rem;
+      padding: 1.25rem;
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .card h2 { margin: .2rem 0 .5rem; font-size: 1.35rem; }
+    .card p { color: var(--muted); }
+    .status { font-size: .8rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+    .button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 2.75rem;
+      margin-top: auto;
+      padding: .65rem 1rem;
+      border-radius: .65rem;
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .button:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
+    footer { max-width: 72rem; margin: auto; padding: 0 1rem 2rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Technical Sharpness</div>
+    <h1>Study Recaps</h1>
+    <p>Mobile-friendly daily lessons from the Enterprise Data &amp; AI Systems Lab. Open a recap to review concepts, reasoning, evidence boundaries, and interview takeaways.</p>
+  </header>
+  <main>
+    <h2>Available recaps</h2>
+    <p class="intro">Each recap is a standalone page that works in a modern browser on phones, tablets, and desktop screens.</p>
+    <div class="grid">
+      <article class="card">
+        <div class="status">Week 1 · Day 1</div>
+        <h2>SQL/Oracle Execution to Distributed Spark Execution</h2>
+        <p>Partitions, tasks, stages, shuffle boundaries, skew, lineage-based recovery, and retry safety.</p>
+        <a class="button" href="daily-artifacts/day-01/recap.html">Open Day 1 recap</a>
+      </article>
+      <article class="card">
+        <div class="status">Week 1 · Day 2</div>
+        <h2>Join Internals</h2>
+        <p>Join strategies, data movement, skew, cardinality, AQE, salting, diagnosis, and interview practice.</p>
+        <a class="button" href="daily-artifacts/day-02/recap.html">Open Day 2 recap</a>
+      </article>
+    </div>
+  </main>
+  <footer>Enterprise Data &amp; AI Systems Lab</footer>
+</body>
+</html>
