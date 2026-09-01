@@ -34,6 +34,10 @@ Use conceptual, execution-plan, implementation, debugging, and Staff-level desig
 
 `recap.html` is a portable study artifact, not the source of truth. It must be self-contained HTML/CSS with no required CDN or external runtime and must link to the Markdown, implementation, test, and experiment files. Include problem, mental-model change, key internals, visual explanation where useful, quiz review, implementation summary, evidence, failure/debugging lesson, interview explanation, architecture bridge, and next step. Clearly label unexecuted experiments and hypothetical projections.
 
+Use `daily-artifacts/_template/recap.html` as the required interactive shell for every completed day. Primary navigation must stay inside the HTML study experience; links to Markdown, implementation, experiments, results, and backlog belong in a secondary **Source files and evidence provenance** area.
+
+Use progressive enhancement: the complete lesson must remain readable when JavaScript is unavailable. Meaningful interaction may support internal navigation, study-mode filtering, search, disclosure, and interview practice; avoid decorative animation that does not improve learning. Preserve semantic landmarks, keyboard operation, visible focus, reduced-motion support, responsive layout, adequate contrast, honest evidence labels, and resolvable source links.
+
 ## Completion rule
 
 A day is complete only when its package is reviewed, the HTML renders correctly, evidence is honest, `CURRENT_SESSION.md` is updated, and everything is committed and pushed. If an artifact is not applicable, explain why in `lesson.md` rather than leaving an ambiguous placeholder.
