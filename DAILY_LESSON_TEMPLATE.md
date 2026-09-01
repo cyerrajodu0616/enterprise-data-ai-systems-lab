@@ -9,6 +9,7 @@
 - Coding Practice: DEFERRED
 - Experiment: DEFERRED
 - Deferred lab IDs: record in `LAB_BACKLOG.md`, or `none`
+- Measured Evidence: NONE until observed
 
 ## 1. Problem
 ## 2. Refresh
@@ -36,6 +37,20 @@ What architecture decision am I now better equipped to make?
 ## 16. Reflection
 
 What changed in my mental model?
+
+## Reasoning audit
+
+- Hidden assumption I made:
+- Why it matters:
+- Known:
+- Missing evidence:
+- Hypothesis:
+- What I should inspect or ask:
+- Conditional recommendation:
+- What would change the decision:
+- Learner terminology:
+- Refined Staff/Lead terminology:
+- How I would validate it:
 
 ## End-of-day package
 

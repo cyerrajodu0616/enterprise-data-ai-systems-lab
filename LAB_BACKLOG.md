@@ -65,3 +65,43 @@ When executing a lab:
 - **Environment/tool:** Local test harness or available Spark environment. Never use real payments or consequential systems.
 - **Status:** TODO
 - **Result/artifact link:** not run
+
+## LAB-006 — Join Strategy and Data Reduction
+
+- **Origin:** Week 1 Day 2 — Join Internals
+- **Question/hypothesis:** A sufficiently small projected build side should permit Broadcast Hash Join and avoid fact-side shuffle/sort; filtering and projection may change the selected strategy, not merely reduce runtime.
+- **Exercise:** Create reproducible fact/dimension data. Compare physical plans for a forced/eligible broadcast join and a Sort-Merge Join, then vary build-side projection and filter selectivity without claiming a strategy in advance.
+- **Expected evidence:** Input and projected sizes where observable, logical/physical plans, BroadcastExchange, input Exchanges/Sorts, selected join operator, configuration/statistics, and limitations.
+- **Environment/tool:** Databricks Free Edition or another available Spark environment.
+- **Status:** TODO
+- **Result/artifact link:** not run
+
+## LAB-007 — Skew, AQE, and Selective Salting
+
+- **Origin:** Week 1 Day 2 — Join Internals
+- **Question/hypothesis:** A hot key should create one/few outlier shuffle partitions; AQE may adapt from runtime partition statistics, while selective salting can distribute the hot key only if the matching side remains join-compatible.
+- **Exercise:** Compare an unsalted hot-key join, AQE-enabled behavior where supported, and selective salting with matching-side replication. Measure amplification and validate equality/correctness of outputs.
+- **Expected evidence:** Key frequencies, partition/shuffle-read distribution, task-duration distribution, spill where exposed, adaptive plan, salt count rationale, replicated-side row growth, and correctness checks.
+- **Environment/tool:** Databricks Free Edition or another available Spark environment; record unsupported metrics explicitly.
+- **Status:** TODO
+- **Result/artifact link:** not run
+
+## LAB-008 — Join Cardinality and N:M Explosion
+
+- **Origin:** Week 1 Day 2 — Join Internals
+- **Question/hypothesis:** Duplicate rows on both sides multiply per-key output according to `LeftCount(K) × RightCount(K)` and can turn an intended N:1 relationship into an N:M correctness and resource problem.
+- **Exercise:** Compare a valid N:1 baseline with a controlled duplicate build-side case. Predict and assert per-key and total output counts before considering performance.
+- **Expected evidence:** Input key counts, expected cardinality, actual output counts, correctness assertions, plan, resource observations where available, and explicit business invariant.
+- **Environment/tool:** Local SQL/Spark test or Databricks Free Edition.
+- **Status:** TODO
+- **Result/artifact link:** not run
+
+## LAB-009 — Statistics and Join-Plan Regression
+
+- **Origin:** Week 1 Day 2 — Join Internals
+- **Question/hypothesis:** Actual build-side size, projection/selectivity, optimizer estimates, or relevant configuration can change a plan from Broadcast Hash Join to Sort-Merge Join; the cause must be isolated rather than assuming stale statistics.
+- **Exercise:** If feasible, construct controlled plan comparisons by changing one variable at a time or by comparing available estimates with actual projected data. Do not force a misleading environment demonstration.
+- **Expected evidence:** Good/bad physical plans, actual projected relation characteristics, optimizer estimates/statistics where exposed, relevant configuration, controlled variable, and limitations.
+- **Environment/tool:** Available Spark environment; mark BLOCKED if estimates cannot be meaningfully controlled or inspected.
+- **Status:** TODO
+- **Result/artifact link:** not run
