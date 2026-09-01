@@ -38,6 +38,8 @@ Use `daily-artifacts/_template/recap.html` as the required interactive shell for
 
 Use progressive enhancement: the complete lesson must remain readable when JavaScript is unavailable. Meaningful interaction may support internal navigation, study-mode filtering, search, disclosure, and interview practice; avoid decorative animation that does not improve learning. Preserve semantic landmarks, keyboard operation, visible focus, reduced-motion support, responsive layout, adequate contrast, honest evidence labels, and resolvable source links.
 
+Every new completed tutorial at `daily-artifacts/day-XX/recap.html` must be linked from the root `index.html` in the same change. It must include a declared document language, a non-empty title, a viewport meta tag, and an `<h1>` heading. Run `python3 scripts/validate_tutorial_index.py` before committing; GitHub Pages deployment must fail when a completed tutorial is missing from the index or any of these accessibility basics is absent.
+
 ## Completion rule
 
-A day is complete only when its package is reviewed, the HTML renders correctly, evidence is honest, `CURRENT_SESSION.md` is updated, and everything is committed and pushed. If an artifact is not applicable, explain why in `lesson.md` rather than leaving an ambiguous placeholder.
+A day is complete only when its package is reviewed, the HTML renders correctly, the tutorial is linked from `index.html`, `scripts/validate_tutorial_index.py` passes, evidence is honest, `CURRENT_SESSION.md` is updated, and everything is committed and pushed. If an artifact is not applicable, explain why in `lesson.md` rather than leaving an ambiguous placeholder.
