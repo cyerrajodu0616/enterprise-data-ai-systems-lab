@@ -98,3 +98,14 @@ A Technical Sharpness day tracks three independent states:
 Deferred coding or experiments must create or update an entry in `LAB_BACKLOG.md`. A day may advance when its conceptual objectives and reasoning exercises are complete unless a specific experiment is an explicit prerequisite. Evidence required for an architecture decision remains unresolved until the experiment is actually executed.
 
 When a deferred experiment is executed, preserve its original hypothesis; record the environment, configuration, and dataset; separate actual observations from interpretation; link the artifacts; mark the lab `DONE`; and revise earlier conclusions when evidence contradicts them.
+
+## Critical reasoning discipline
+
+- **Assumption discipline:** Never silently convert an unknown into a fact. Classify important claims as **Known**, **Assumption**, **Missing Evidence**, **Hypothesis**, or **Decision**.
+- **Non-vague communication:** “It depends” is incomplete. State what the decision depends on, why those variables matter, what evidence is needed, and how the recommendation changes conditionally.
+- **Diagnostic before prescriptive:** Before changing configuration, infrastructure, or implementation, identify the observation, plausible causes, and evidence that distinguishes them.
+- **Vocabulary refinement:** Preserve sound learner reasoning when terminology is imprecise, then explicitly teach the Staff/Lead-level phrasing.
+
+Use: `Observation -> Known -> Assumption -> Missing Evidence -> Inspect / Ask -> Conditional Diagnosis -> Recommendation -> Validation`.
+
+For each significant recommendation record what supports it, what assumption it depends on, what would make it wrong, and how the result will be validated.

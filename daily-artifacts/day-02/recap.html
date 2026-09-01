@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day 02 — Join Internals Reasoning Recap</title>
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; line-height: 1.58; }
+    body { max-width: 78rem; margin: auto; padding: 2rem; }
+    header, nav, section, article { margin-block: 1.5rem; }
+    nav { display: flex; flex-wrap: wrap; gap: .5rem 1rem; }
+    h2 { border-block-end: 2px solid currentColor; padding-block-end: .3rem; }
+    h3 { margin-block-start: 1.5rem; }
+    code, .flow, .formula { font-family: ui-monospace, monospace; }
+    .flow, .formula, .callout { padding: 1rem; border: 1px solid currentColor; border-radius: .55rem; overflow-wrap: anywhere; }
+    .warning { border-inline-start: .4rem solid #c58400; }
+    .good { border-inline-start: .4rem solid #238636; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1rem; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid currentColor; padding: .65rem; text-align: left; vertical-align: top; }
+    a { text-underline-offset: .2em; }
+    @media (max-width: 42rem) { body { padding: 1rem; } table { display: block; overflow-x: auto; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Day 02 — Join Internals</h1>
+    <p><strong>Conceptual learning:</strong> COMPLETE · <strong>Reasoning:</strong> COMPLETE · <strong>Coding:</strong> DEFERRED · <strong>Experiments:</strong> DEFERRED · <strong>Measured evidence:</strong> NONE</p>
+    <p class="callout warning"><strong>Evidence boundary:</strong> Numeric scenarios are conceptual examples unless labeled as learner production experience. No Day 2 Spark job, physical plan, Spark UI evidence, runtime, shuffle, spill, or benchmark was captured.</p>
+  </header>
+  <nav aria-label="Source artifacts">
+    <a href="lesson.md">Lesson</a><a href="quiz.md">Quiz attempt</a><a href="quiz-review.md">Quiz review</a>
+    <a href="interview-cheat-sheet.md">5-minute cheat sheet</a><a href="experiment.md">Experiment</a>
+    <a href="results.md">Results</a><a href="implementation/README.md">Implementation</a><a href="../../LAB_BACKLOG.md">Lab backlog</a>
+  </nav>
+  <main>
+    <section>
+      <h2>Stop, Assess, Then Answer</h2>
+      <p>This is the central Day 2 upgrade: do not silently convert an unknown into a fact.</p>
+      <p class="flow">Observation → Known → Assumption → Missing Evidence → What to inspect / ask → Conditional diagnosis → Recommendation → How to validate</p>
+      <p class="callout good">“I do not have enough information to choose yet. I would check X and Y because they determine Z. If X is true, I would choose A; otherwise I would investigate B. I would validate with …”</p>
+      <div class="grid">
+        <article><h3>Broadcast decision</h3><p><strong>Weak:</strong> “CUSTOMERS has 5M rows, so broadcast it.”</p><p><strong>Known:</strong> 5M rows. <strong>Missing:</strong> projected bytes after filter/projection, hashed in-memory representation, worker memory, statistics/configuration.</p><p><strong>Conditional answer:</strong> If the projected build side is safe and economical to distribute and hash, Broadcast Hash Join is an initial candidate.</p></article>
+        <article><h3>Slow executor</h3><p><strong>Weak:</strong> “One executor is slow, so we have skew.”</p><p>Inspect task-duration, shuffle-read, partition-size, key-frequency, spill, and memory distributions. If one/few tasks process outlier partitions, investigate hot keys.</p></article>
+        <article><h3>Add executors</h3><p><strong>Weak:</strong> “The job is slow, so add executors.”</p><p>First distinguish insufficient aggregate capacity from an indivisible skewed partition. More capacity does not inherently split one hot-key partition.</p></article>
+        <article><h3>Increase partitions</h3><p><strong>Weak:</strong> “Increase shuffle partitions to fix the large task.”</p><p>If most partitions are large, additional partition-level parallelism may help. If one key dominates, normal hash partition count does not inherently split it.</p></article>
+        <article><h3>Output explosion</h3><p><strong>Weak:</strong> “Spark produces too many rows.”</p><p>Ask expected cardinality. Compare expected N:1 with actual N:M using per-key counts before tuning.</p></article>
+        <article><h3>Duplicate customers</h3><p><strong>Weak:</strong> “Deduplicate CUSTOMERS.”</p><p>Establish why the uniqueness invariant failed and identify the valid record from defined semantics. Arbitrary deduplication can hide the defect.</p></article>
+        <article><h3>Broadcast disappeared</h3><p><strong>Weak:</strong> “Force broadcast.”</p><p>Compare actual projected build size, filter/projection, optimizer estimates/statistics, and configuration across good and bad runs. If growth is legitimate, forcing broadcast treats the symptom.</p></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Traditional Join Selection</h2>
+      <h3>Scenario / question</h3><p>Conceptual ORDERS = 1B rows; CUSTOMERS = 5M; no indexes; neither sorted.</p>
+      <h3>My reasoning</h3><p>Row counts alone were insufficient. Projected size and compute/memory matter. Hash join looked attractive; nested loop suggested repeated access; sort-merge introduced sort CPU, memory, and I/O.</p>
+      <h3>What was correct</h3><p>The reasoning compared prerequisite work and identified the smaller build side.</p>
+      <h3>Correction / refinement</h3><p>Join algorithm and access path belong together. Indexed/selective nested loop can be reasonable. Hash representation can exceed serialized size. Sort-merge can spill and becomes more attractive when ordering already exists.</p>
+      <h3>Staff/Lead vocabulary</h3><p>“Do not only ask which algorithm is cheaper. Ask which expensive prerequisite work has already been done.”</p>
+      <h3>Interview version</h3><p>“I would compare projected bytes, access paths, ordering, selectivity, and memory. With no useful access path or order, hash join is a candidate—but I would not select from row count alone.”</p>
+    </section>
+
+    <section>
+      <h2>Broadcast Hash Join: Build and Probe</h2>
+      <p><strong>Scenario:</strong> Conceptual ORDERS = 1 TB; CUSTOMERS initially small.</p>
+      <p><strong>My reasoning:</strong> Broadcast the smaller customer relation to avoid redistributing the 1 TB fact.</p>
+      <p><strong>Correct:</strong> CUSTOMERS is the build side; ORDERS is the probe side. Probe rows can be processed against the hash structure; the whole probe need not fit in memory. Broadcast still pays for <code>BroadcastExchange</code>.</p>
+      <p><strong>Refinement:</strong> serialized/on-disk size ≠ in-memory hash-table size. Include replication, network, execution memory, concurrent workload, and overhead. Build keys need not be unique; duplicates produce multiple matches—no “latest wins.”</p>
+      <p class="callout">Sort-Merge Join pays for ordering so it can merge. Hash Join pays for a hash structure so it can probe.</p>
+    </section>
+
+    <section>
+      <h2>Reduce Data Before Optimizing Movement</h2>
+      <h3>Projection</h3><p>In the conceptual scenario, CUSTOMERS widened from roughly 150 MB to 6 GB with the same row count. The learner proposed selecting only two required attributes and reassessing strategy.</p>
+      <p><strong>Correct:</strong> row count ≠ data size. Projection can make broadcast feasible, changing strategy rather than merely improving it slightly.</p>
+      <p><strong>Double regression from <code>SELECT *</code>:</strong> the build side stops being attractive for broadcast; the replacement shuffle join now scans, serializes, moves, sorts, spills, and emits wider rows.</p>
+      <h3>Filtering</h3><p>For NJ/active customers: <span class="flow">business requirement → filter → project → re-evaluate size → choose strategy</span></p>
+      <h3>Predicate pushdown</h3><p>Source pushdown can avoid reading irrelevant data. Even without it, Spark Filter before Exchange/join can reduce work. Ask: “At what point in the physical plan was data actually reduced?”</p>
+    </section>
+
+    <section>
+      <h2>Sort-Merge Join Internals</h2>
+      <p class="flow">Left Scan → Exchange hashpartitioning(key) → Sort ↘<br>Right Scan → Exchange hashpartitioning(key) → Sort → SortMergeJoin</p>
+      <p>One logical redistribution requirement appears as Exchange/shuffle on both inputs. <strong>Exchange solves location.</strong> Matching keys reach corresponding partitions. <strong>Sort solves ordering.</strong> Hash partitioning does not order rows within a partition.</p>
+    </section>
+
+    <section>
+      <h2>Skew, Executors, and Shuffle Partitions</h2>
+      <p><strong>Scenario:</strong> One conceptual hot customer is about 35% of one side.</p>
+      <p><strong>My reasoning:</strong> One task takes much longer; adding executors does not split the hot key because equal hash keys still route together.</p>
+      <p><strong>Correction:</strong> Say “a straggler task is processing a disproportionately large shuffle partition,” not “one executor is slow.” A slow executor alone is not proof.</p>
+      <table><thead><tr><th>Skew</th><th>Generally oversized partitions</th></tr></thead><tbody><tr><td>Most partitions similar; one/few extreme outliers. More ordinary shuffle partitions may not split HOT.</td><td>Most/all similarly large. More partition-level parallelism may help.</td></tr></tbody></table>
+      <p>Diagnose at task/partition level before blaming an executor.</p>
+    </section>
+
+    <section>
+      <h2>Selective Salting</h2>
+      <p><strong>My reasoning:</strong> Salt only HOT as <code>(HOT,0)</code>, <code>(HOT,1)</code>… so it can reach multiple partitions/tasks.</p>
+      <p><strong>Correctness challenge:</strong> If only the fact is salted, matches are lost. For N:1, replicate the matching dimension row across identical salt values, then join on <code>(customer_id, salt)</code>.</p>
+      <p><strong>Cost:</strong> Replication amplifies the other side; many matching HOT rows multiplied across many buckets can be enormous.</p>
+      <p><strong>Bucket correction:</strong> Do not choose an executor multiple. Use measured hot volume, unsalted partition behavior, healthy task evidence, memory/spill, execution slots, scheduling overhead, replication, and remeasurement. Perfect slot utilization ≠ minimum runtime.</p>
+    </section>
+
+    <section>
+      <h2>AQE and Plan Regression</h2>
+      <p>AQE is <strong>Adaptive Query Execution</strong>. Static optimization asks what is expected; adaptive execution asks what actually emerged after a stage and whether physical execution should adjust. Outlier shuffle statistics can support skew handling without semantic knowledge of HOT. AQE is not automatic salting.</p>
+      <p class="flow">reduce unnecessary data → simplest valid join → accept legitimate shuffle → verify skew → investigate AQE → selective salting only if required</p>
+      <h3>Broadcast yesterday, Sort-Merge today</h3><ol><li>Actual projected build-side volume/width?</li><li>Environment/configuration?</li><li>Statistics/estimates?</li><li>Projection change?</li><li>Filter selectivity/early reduction change?</li></ol>
+      <p>Distinguish actual relation size from optimizer-estimated size. Bad estimates can produce a poor initial plan.</p>
+    </section>
+
+    <section>
+      <h2>Join Cardinality: Correctness Before Tuning</h2>
+      <p class="formula">Output(K) = LeftCount(K) × RightCount(K)</p>
+      <p>Three left rows × three right rows = nine output rows. The conceptual 10M HOT × 500K HOT example implies five trillion logical rows; it is arithmetic, not a measured run.</p>
+      <p><strong>Input skew</strong> concerns disproportionate input distribution. <strong>Cardinality explosion</strong> concerns multiplicative matches. The engine may be correctly executing incorrect business semantics.</p>
+      <h3>Expected SALES N:1 CUSTOMERS; C999 has 25 active customer rows</h3>
+      <ol><li>Investigate why the business uniqueness invariant failed.</li><li>Determine the valid record from defined business/version rules.</li><li>Restore N:1 and validate the key.</li><li>Rerun and measure a representative workload.</li><li>Only then investigate legitimate hot-key skew/AQE.</li></ol>
+      <p>Source, ingestion, CDC, SCD/versioning, and active-record logic are possible investigation areas—not asserted causes.</p>
+      <p class="callout warning">Do not salt your way around incorrect business data.</p>
+    </section>
+
+    <section>
+      <h2>Learner Production Experience: Amex</h2>
+      <p>A prior Amex join was effectively N×N. Available Spark resources initially processed the growing workload. Around the third month, continued growth caused OOM. Investigation found the N×N/cardinality explosion.</p>
+      <p><strong>Lesson:</strong> Resource capacity can temporarily mask a cardinality defect; multiplicative output eventually overwhelms the system. No additional scale, date, implementation, or business metric is claimed.</p>
+    </section>
+
+    <section>
+      <h2>Vocabulary Upgrade: From Correct Answer to Staff-Level Answer</h2>
+      <table><thead><tr><th>Instead of</th><th>Use</th></tr></thead><tbody>
+        <tr><td>One executor is slow.</td><td>One task is a straggler because it is processing a disproportionately large shuffle partition.</td></tr>
+        <tr><td>Add more executors.</td><td>First distinguish insufficient aggregate parallelism from an indivisible/skewed partition; additional executors do not split a hot-key partition.</td></tr>
+        <tr><td>It has only 5M rows, so broadcast it.</td><td>Evaluate projected build bytes, in-memory hash representation, replication, worker memory pressure, and concurrency.</td></tr>
+        <tr><td>Increase shuffle partitions to fix skew.</td><td>More partitions improve general partition parallelism but do not inherently split a single hot hash key.</td></tr>
+        <tr><td>Spark produces too many rows.</td><td>Validate expected versus actual join cardinality; an expected N:1 relationship may have degraded into N:M.</td></tr>
+        <tr><td>Deduplicate customers.</td><td>Identify the violated invariant and valid record using defined semantics; arbitrary deduplication hides defects.</td></tr>
+        <tr><td>Filter first because it is faster.</td><td>Reduce rows and columns before expensive movement, then reassess whether a simpler physical strategy is feasible.</td></tr>
+        <tr><td>AQE knows the hot customer.</td><td>AQE can identify disproportionately large shuffle partitions using runtime statistics.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section>
+      <h2>Production Debugging Hierarchy</h2>
+      <p class="flow">What changed? → Is result cardinality correct? → Are filters/projections minimal and early? → Which physical plan and why? → Where does data move? → What do task/partition metrics show? → Overall sizing or skew? → Can AQE handle it? → Only then manual salting</p>
+      <p><strong>Diagnose before tuning.</strong> Restore the simplest valid execution path before adding a workaround for the consequences of a more expensive path.</p>
+    </section>
+
+    <section>
+      <h2>Evidence, Architecture Bridge, and Next Step</h2>
+      <p>LAB-006 through LAB-009 remain TODO. No physical plan or measured behavior supports architecture claims yet.</p>
+      <p><strong>Next:</strong> Week 1 Day 3 — Partitioning and Pruning. Compare database partitioning with distributed partitions/files, partition pruning, data skipping, and over-partitioning. Day 3 has not started.</p>
+    </section>
+  </main>
+</body>
+</html>

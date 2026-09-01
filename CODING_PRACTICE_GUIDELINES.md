@@ -12,6 +12,19 @@ This personal project develops strong AI-assisted engineering while preserving i
 
 Regularly work without AI assistance to remain ready for interviews and production debugging. Prioritize SQL, Python, PySpark, broken-pipeline repair, execution plans, and performance reasoning.
 
+## Stop, assess, then answer
+
+Before proposing a code, configuration, or infrastructure change:
+
+1. state the observed symptom;
+2. separate known facts from assumptions and hypotheses;
+3. identify missing evidence and how to collect it;
+4. give a conditional recommendation;
+5. state what would change the decision;
+6. define validation.
+
+Avoid reflexive prescriptions such as adding memory/executors, increasing partitions, broadcasting a “small” table, salting, deduplicating, or relying on an optimizer without evidence that distinguishes the underlying causes.
+
 ## AI-Assisted Engineering Mode
 
 Codex/Claude-style assistance is allowed for larger enterprise-project delivery. Understand generated code, add appropriate tests, explain important decisions, measure performance claims, and retain ownership of architecture.
