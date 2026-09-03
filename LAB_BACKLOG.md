@@ -105,3 +105,53 @@ When executing a lab:
 - **Environment/tool:** Available Spark environment; mark BLOCKED if estimates cannot be meaningfully controlled or inspected.
 - **Status:** TODO
 - **Result/artifact link:** not run
+
+## LAB-010 — Partition Pruning and Predicate Shape
+
+- **Origin:** Week 1 Day 3 — Partitioning and Pruning
+- **Question/hypothesis:** A predicate that directly constrains a partition column may enable more effective pruning than an equivalent transformed predicate, but actual behavior depends on the engine, version, optimizer, and expression support.
+- **Exercise:** Create equivalent direct-range and transformed date predicates where supported. Change one variable at a time and inspect whether pruning occurs.
+- **Expected evidence:** Logical/physical plans, partition filters, pushed filters, partitions and files scanned, bytes read, query results, relevant versions/configuration, and limitations.
+- **Environment/tool:** Databricks Free Edition or another available Spark environment; capability and exposed metrics not yet verified.
+- **Status:** TODO
+- **Result/artifact link:** not run
+
+## LAB-011 — Physical Locality and Data Skipping
+
+- **Origin:** Week 1 Day 3 — Partitioning and Pruning
+- **Question/hypothesis:** Improved physical locality for selective `customer_id` predicates should make file-level statistics more selective and may reduce files and bytes read compared with equivalent randomly scattered values.
+- **Exercise:** Create logically equivalent datasets with poor customer locality and improved customer locality. Run the same selective customer queries.
+- **Expected evidence:** Physical layout, collected statistics, files considered/skipped/read, bytes scanned, runtime, identical query results, and environment limitations.
+- **Environment/tool:** Databricks Free Edition or another available Spark environment; capability and exposed metrics not yet verified.
+- **Status:** TODO
+- **Result/artifact link:** not run
+
+## LAB-012 — Small Files and Compaction
+
+- **Origin:** Week 1 Day 3 — Partitioning and Pruning
+- **Question/hypothesis:** For equivalent logical data and scan volume, many small files may add discovery, metadata, open, planning, scheduling, and execution overhead relative to fewer larger files.
+- **Exercise:** Create logically equivalent many-small-file and fewer-larger-file layouts, preserving controlled variables and required organization.
+- **Expected evidence:** File count and size distribution, planning/scan behavior, task count, bytes per task, task-duration distribution, stage/runtime, correctness, and falsifying evidence such as shuffle/spill/skew dominance.
+- **Environment/tool:** Databricks Free Edition or another available Spark environment; capability and exposed metrics not yet verified.
+- **Status:** TODO
+- **Result/artifact link:** not run
+
+## LAB-013 — Repartitioning Cost and Valid Use
+
+- **Origin:** Week 1 Day 3 — Partitioning and Pruning
+- **Question/hypothesis:** Unnecessary `repartition()` should add Exchange/shuffle and may increase runtime, while repartitioning may help only when a demonstrated distribution or parallelism problem benefits from redistribution.
+- **Exercise:** Compare a baseline with unnecessary repartitioning, then construct a separate controlled case with a demonstrated distribution/parallelism problem and test whether repartitioning addresses it.
+- **Expected evidence:** Plans, Exchange operators, stages, shuffle read/write, task distribution, runtime, selected partition counts, correctness, and controlled-variable differences.
+- **Environment/tool:** Databricks Free Edition or another available Spark environment; capability and exposed metrics not yet verified.
+- **Status:** TODO
+- **Result/artifact link:** not run
+
+## LAB-014 — Physical Optimization Correctness Invariants
+
+- **Origin:** Week 1 Day 3 — Partitioning and Pruning
+- **Question/hypothesis:** Physical optimizations must preserve equivalent business results for the same input/snapshot even when layout and execution metrics change.
+- **Exercise:** For each Day 3 physical optimization, compare before/after outputs using the relevant business invariants before accepting performance evidence.
+- **Expected evidence:** Row counts, business keys, duplicates, null behavior, aggregates, business totals, query results, snapshot/input identity, and explicit pass/fail assertions.
+- **Environment/tool:** Databricks Free Edition or another available Spark environment; capability and exposed metrics not yet verified.
+- **Status:** TODO
+- **Result/artifact link:** not run
