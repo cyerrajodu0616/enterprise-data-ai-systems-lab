@@ -24,6 +24,12 @@ Coding Practice: DEFERRED
 
 Hands-on Experiments: DEFERRED
 
+## Early / out-of-sequence completion
+
+**Week 3, Day 17 — Delta MERGE and Idempotent Processing:** conceptual learning and reasoning COMPLETE EARLY / OUT OF SEQUENCE.
+
+Day 17 coding, experiment, concurrency simulation, and measurements remain pending as LAB-015. Day 16 and scheduled Days 4–16 are not complete. The next roadmap lesson remains **Week 1, Day 4 — Aggregation at Scale**.
+
 ## Concepts completed
 
 - Partition-pruning qualification: table partitioning reduces scan only when predicate shape and optimizer behavior permit safe elimination.
@@ -34,6 +40,7 @@ Hands-on Experiments: DEFERRED
 - Freshness SLA, ingestion cadence, file behavior, and maintenance cost as an architecture trade-off.
 - Predicate-shape and production-regression diagnosis from plans, filters, scan/file/task metrics, shuffle, spill, skew, and stage timing.
 - Liquid-clustering key selection/evolution, current skipping effectiveness, historical-data migration cost, and correctness-first validation.
+- Day 17: authoritative CDC ordering, deterministic source cardinality, target sequence guards, tombstones and reactivation policy, dependent-event handling, scan/rewrite/write-amplification diagnosis, deterministic retries, and SLA-driven workload coordination.
 
 ## Coding completed
 
@@ -63,6 +70,7 @@ None — Day 3 repository lab measurements are tracked as LAB-010 through LAB-01
 - LAB-012 — Small Files and Compaction
 - LAB-013 — Repartitioning Cost and Valid Use
 - LAB-014 — Physical Optimization Correctness Invariants
+- LAB-015 — Delta CDC MERGE Correctness, Performance, and Concurrency
 
 `LAB_BACKLOG.md` is the durable detailed source. Environment capabilities and all measurements remain unresolved until execution.
 
@@ -77,12 +85,14 @@ Conceptual source domains and Bronze/Silver/Gold flow exist. Grain, physical mod
 - Establish workload, scan, locality, and stage evidence before changing layout.
 - Use compaction for stored-file remediation and `repartition()` for demonstrated runtime redistribution needs.
 - State hypotheses and falsifiers explicitly, and account for historical migration cost when clustering keys change.
+- Day 17 evidence gap: validate Day 16 producer guarantees and execute LAB-015 before claiming MERGE correctness, concurrency behavior, layout benefit, or measured workload outcomes.
 
 ## Artifacts created
 
 - Completed conceptual Day 1 package under `daily-artifacts/day-01/`.
 - Completed conceptual Day 2 package under `daily-artifacts/day-02/`, including a five-minute interview cheat sheet.
 - Completed conceptual Day 3 package under `daily-artifacts/day-03/`, including the Architect/Engineer challenge and five-minute interview cheat sheet.
+- Completed-early conceptual Day 17 package under `daily-artifacts/day-17/`, including its reasoning journal, Vocabulary Upgrade, challenge, and interview cheat sheet; hands-on work remains TODO.
 - Deferred experiment ledger in `LAB_BACKLOG.md`.
 
 ## Next lesson
@@ -96,13 +106,16 @@ Study `GROUP BY`, partial/local aggregation, shuffle, reducers/final aggregation
 1. `RESUME_PROTOCOL.md`
 2. `daily-artifacts/day-03/recap.html` and its linked source artifacts
 3. `daily-artifacts/day-03/interview-cheat-sheet.md`
-4. `LAB_BACKLOG.md`
-5. `LEARNING_GUIDELINES.md`
-6. `CODING_PRACTICE_GUIDELINES.md`
-7. `ROADMAP.md`
-8. `foundations/sql-to-distributed-systems/README.md`
-9. `enterprise-challenges/README.md`
-10. `ARCHITECTURE_LAB_BRIDGE.md`
+4. `daily-artifacts/day-17/recap.html`
+5. `daily-artifacts/day-17/interview-cheat-sheet.md`
+6. `daily-artifacts/day-17/experiment.md` (LAB-015 TODO)
+7. `LAB_BACKLOG.md`
+8. `LEARNING_GUIDELINES.md`
+9. `CODING_PRACTICE_GUIDELINES.md`
+10. `ROADMAP.md`
+11. `foundations/sql-to-distributed-systems/README.md`
+12. `enterprise-challenges/README.md`
+13. `ARCHITECTURE_LAB_BRIDGE.md`
 
 ## Parallel program
 
