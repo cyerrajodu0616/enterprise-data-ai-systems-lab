@@ -155,3 +155,13 @@ When executing a lab:
 - **Environment/tool:** Databricks Free Edition or another available Spark environment; capability and exposed metrics not yet verified.
 - **Status:** TODO
 - **Result/artifact link:** not run
+
+## LAB-015 — Delta CDC MERGE Correctness, Performance, and Concurrency
+
+- **Origin:** Week 3 Day 17 — Delta MERGE and Idempotent Processing (conceptual reasoning completed early/out of sequence)
+- **Question/hypothesis:** Deterministic source cardinality, target sequence guards, and tombstones should preserve current-state correctness across duplicates, late arrivals, deletes, reactivation policy, retries, and concurrent writers; measured layout and workload coordination may reduce scan/conflict cost while preserving both SLAs.
+- **Exercise:** Generate duplicate and out-of-order CDC events; deduplicate by authoritative source sequence; implement sequence-guarded MERGE; test duplicate retry, matched and unmatched deletes, late update after deletion, allowed reactivation, terminal-delete quarantine, and independent/dependent later events; capture row/file metrics and logical-versus-physical change; simulate or document concurrency behavior; implement deterministic resumable backfill chunks; verify correctness before/after layout changes.
+- **Expected evidence:** State and sequence assertions for every transition; idempotent retry/quarantine evidence; rows updated/copied/inserted/deleted; files/bytes scanned and rewritten where exposed; logical and physical change volume; transaction/conflict history; chunk duration/progress; both SLA outcomes; before/after correctness equivalence.
+- **Environment/tool:** Databricks Free Edition or another Delta-capable Spark environment; runtime, table features, isolation, row-level concurrency, and exposed metrics not yet verified.
+- **Status:** TODO
+- **Result/artifact link:** not run
