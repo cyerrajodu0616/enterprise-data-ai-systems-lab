@@ -40,7 +40,7 @@ Day 17 coding, experiment, concurrency simulation, and measurements remain pendi
 - Freshness SLA, ingestion cadence, file behavior, and maintenance cost as an architecture trade-off.
 - Predicate-shape and production-regression diagnosis from plans, filters, scan/file/task metrics, shuffle, spill, skew, and stage timing.
 - Liquid-clustering key selection/evolution, current skipping effectiveness, historical-data migration cost, and correctness-first validation.
-- Day 17: authoritative CDC ordering, deterministic source cardinality, target sequence guards, tombstones and reactivation policy, dependent-event handling, scan/rewrite/write-amplification diagnosis, deterministic retries, and SLA-driven workload coordination.
+- Day 17: authoritative CDC ordering, deterministic source cardinality, target sequence guards, tombstones/reactivation, dependent events, scan/rewrite/write amplification, Databricks AUTO CDC/deletion vectors/row-level concurrency, Snowflake pipeline choices, representative industry CDC patterns, deterministic retries, and SLA-driven workload coordination.
 
 ## Coding completed
 
@@ -86,6 +86,7 @@ Conceptual source domains and Bronze/Silver/Gold flow exist. Grain, physical mod
 - Use compaction for stored-file remediation and `repartition()` for demonstrated runtime redistribution needs.
 - State hypotheses and falsifiers explicitly, and account for historical migration cost when clustering keys change.
 - Day 17 evidence gap: validate Day 16 producer guarantees and execute LAB-015 before claiming MERGE correctness, concurrency behavior, layout benefit, or measured workload outcomes.
+- Check current managed-platform capabilities and compatibility before recommending custom MERGE or workload coordination; keep documented facts, lesson scenarios, and architectural inference distinct.
 
 ## Artifacts created
 
