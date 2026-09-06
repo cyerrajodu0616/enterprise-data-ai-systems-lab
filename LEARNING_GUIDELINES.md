@@ -99,6 +99,15 @@ Deferred coding or experiments must create or update an entry in `LAB_BACKLOG.md
 
 When a deferred experiment is executed, preserve its original hypothesis; record the environment, configuration, and dataset; separate actual observations from interpretation; link the artifacts; mark the lab `DONE`; and revise earlier conclusions when evidence contradicts them.
 
+### Industry and vendor reference completion check
+
+Every completed Technical Sharpness lesson must:
+
+- include current official Databricks or Snowflake references when relevant;
+- examine at least one credible production implementation from a major engineering organization when public primary evidence exists;
+- clearly separate documented fact, lesson scenario, and architectural inference; and
+- check current official documentation before relying on platform behavior that may have changed.
+
 ## Critical reasoning discipline
 
 - **Assumption discipline:** Never silently convert an unknown into a fact. Classify important claims as **Known**, **Assumption**, **Missing Evidence**, **Hypothesis**, or **Decision**.

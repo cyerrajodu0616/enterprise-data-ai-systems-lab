@@ -117,6 +117,8 @@ Accept a layout only with identical customer state, identical latest accepted se
 
 The fraction of files rewritten describes a broad update footprint. Write amplification compares physical bytes rewritten with logical bytes changed. Under explicit lesson assumptions: 250,000 rows × 1 KB ≈ 250 MB logical change; 2,400 files × 128 MB ≈ 307 GB physical rewrite; approximately 1,228× amplification. These are arithmetic assumptions, not repository or production measurements.
 
+**Documented current behavior:** Without deletion vectors, modifying a row can require rewriting its complete containing Parquet file. When deletion vectors are enabled and supported by the writer, affected rows can instead be recorded as metadata-backed soft deletions, reducing the immediate full-file rewrite; later optimization, purge, or eligible compaction physically rewrites the file. This defers physical work rather than eliminating it. Delta tables do not all have deletion vectors: the feature must be enabled, upgrades the table protocol, and requires compatible readers and writers. See [Databricks — Deletion vectors in Databricks](https://docs.databricks.com/aws/en/tables/features/deletion-vectors) (Accessed 2026-09-06).
+
 ## 11. No-op CDC events and ordering boundaries
 
 Of 25 million records, the scenario says 250,000 change attributes and 24.75 million have identical attributes but newer sequences. Prefer preventing unnecessary source writes, but log CDC may correctly emit UPDATE operations with unchanged values. Never discard immutable Bronze.
@@ -125,9 +127,11 @@ Skipping target updates avoids sequence-only file rewrites but loses the newest 
 
 ## 12. Concurrent writers and deterministic retries
 
-In the supplied conventional copy-on-write case, Jobs A and B read version 100; A changes C101, B changes C900, and both rows occupy one immutable Parquet file. A commits version 101. B's stale transaction fails atomically and must retry the complete deterministic MERGE against the latest snapshot—not recover one task or file.
+**Lesson scenario without applicable row-level concurrency:** Jobs A and B read version 100; A changes C101, B changes C900, and both rows occupy one immutable Parquet file. A commits version 101. Under conventional file-level conflict behavior, B's stale transaction fails atomically and must retry the complete deterministic MERGE against the latest snapshot—not recover one task or file.
 
-Safe retries require an immutable source batch, deterministic deduplication, sequence guards, idempotent tombstones, and bounded retry. Actual conflict behavior depends on runtime, isolation, table features, predicates, and row-level concurrency; same-file conflict is not universal across current configurations.
+**Documented current behavior:** Databricks row-level concurrency can detect changes at row level and resolve conflicts when concurrent writes modify different rows in the same file. The documented requirements include Databricks Runtime 14.3 LTS or later, an unpartitioned table, and deletion vectors enabled; metadata changes and other documented limitations still cause conflicts. Therefore, same-file contention is not universal and neither deletion vectors nor row-level concurrency should be assumed without checking the table protocol, runtime, client, layout, isolation, and operation. See [Databricks — Row-level concurrency](https://docs.databricks.com/aws/en/optimizations/isolation/row-level-concurrency) and [Databricks — Deletion vectors](https://docs.databricks.com/aws/en/tables/features/deletion-vectors) (Accessed 2026-09-06).
+
+Safe retries for conflicts that remain require an immutable source batch, deterministic deduplication, sequence guards, idempotent tombstones, and bounded retry.
 
 ## 13. Diagnose conflicts before retry policy
 
@@ -135,7 +139,7 @@ The lesson reports 47 of 52 weekly conflicts occur during daily backfill, even t
 
 ## 14. SLA-driven workload coordination
 
-Prioritize CDC's 15-minute SLA. Pause/resume the 24-hour backfill as deterministic, idempotent, independently committed checkpointed chunks; replan each resumed chunk against the latest snapshot. Measure both workloads so coordination does not merely move the SLA violation.
+First validate the current table/runtime concurrency capabilities and observe residual conflicts. Where conflicts still threaten the supplied SLAs, prioritize CDC's 15-minute SLA and pause/resume the 24-hour backfill as deterministic, idempotent, independently committed checkpointed chunks; replan each resumed chunk against the latest snapshot. Workload coordination is a fallback and operational control, not the first assumption when row-level concurrency already resolves disjoint-row contention. Measure both workloads so coordination does not merely move the SLA violation.
 
 ## 15. Backfill chunk sizing
 
@@ -147,7 +151,57 @@ The lesson—not this repository—reports seven-minute chunks completing backfi
 
 Reopen if CDC nears 15 minutes, backfill nears 24 hours, conflicts/retries materially rise, backfills become continuous, aborted cost matters, writers are added, or chunking increases small files/write amplification.
 
-## 17. Vocabulary Upgrade
+## 17. Databricks managed CDC: AUTO CDC versus manual MERGE
+
+**Documented fact:** Lakeflow `AUTO CDC` applies a streaming CDC source to a target. `KEYS` identifies the column or columns that uniquely identify a source record. `SEQUENCE BY` supplies sortable logical event order and lets the pipeline handle events that arrive out of order. `APPLY AS DELETE WHEN` declares which events are deletes. SCD Type 1, the default, keeps current state; SCD Type 2 keeps history and uses sequencing-typed `__START_AT` and `__END_AT` fields. See [Databricks — AUTO CDC INTO (pipelines)](https://docs.databricks.com/aws/en/ldp/developer/ldp-sql-ref-apply-changes-into) and [Databricks — Change data capture and snapshots](https://docs.databricks.com/aws/en/data-engineering/what-is-cdc) (Accessed 2026-09-06).
+
+For out-of-order SCD Type 2 deletes, Databricks documents temporary tombstones in the underlying Delta table and a metastore view that filters them. Retention is configurable through `pipelines.cdc.tombstoneGCThresholdInSeconds`. These are managed processing tombstones and must not be conflated with this lesson's proposed minimal business current-state tombstone, whose retention and PII policy remain application decisions.
+
+**Architectural inference:** Prefer AUTO CDC when its key, ordering, delete, partial-update, and SCD semantics express the verified contract. It removes hand-built staging, deduplication, sequencing, and history plumbing. A manual MERGE can still be justified for transition/quarantine/state models AUTO CDC cannot express, unsupported environments, or evidence-backed operational constraints. Custom code must own source cardinality, ordering, tombstones, replay, tests, metrics, upgrades, and deterministic retries; it must earn that cost.
+
+## 18. Snowflake equivalent: Streams, Tasks, MERGE, and Dynamic Tables
+
+**Documented fact:** A Snowflake Stream stores an offset rather than table data and exposes row changes between transactional points. `METADATA$ACTION` reports INSERT or DELETE; `METADATA$ISUPDATE` identifies whether a record belongs to an UPDATE, which appears as a DELETE/INSERT pair with that flag true; `METADATA$ROW_ID` is an immutable row identifier for tracking changes, subject to documented source/change-tracking qualifications. See [Snowflake — Introduction to streams](https://docs.snowflake.com/en/user-guide/streams-intro) (Accessed 2026-09-06).
+
+Tasks run SQL or procedures on schedules or triggers. Streams + Tasks + MERGE fit procedural DML, custom retries/orchestration, complex upserts, and SCD Type 2. A Dynamic Table is simpler when the desired result is expressible as a declarative SELECT and Snowflake can manage refresh timing, dependency order, and incremental processing. Dynamic Tables are read-only and do not support MERGE, so they do not replace Streams/Tasks for direct DML or procedural control. See [Snowflake — Introduction to streams and tasks](https://docs.snowflake.com/en/user-guide/data-pipelines-intro) and [Snowflake — Decision guide for dynamic tables](https://docs.snowflake.com/en/user-guide/dynamic-tables/decision-guide) (Accessed 2026-09-06).
+
+**Architectural inference:** A Stream offset establishes Snowflake consumption position, not the original external source system's business order. If external CDC records can arrive out of order, retain and enforce an authoritative source sequence just as the foundational design requires.
+
+## 19. Representative industry practices
+
+| Publication | Documented practice | Generalizable lesson |
+|---|---|---|
+| Netflix, DBLog | Transaction-log CDC is interleaved with watermark-coordinated table selection for full state; selects run in tracked chunks that can pause/resume with minimal source impact. | Coordinate bootstrap and incremental capture without blocking log progress; checkpoint bounded work. |
+| LinkedIn, Brooklin | Low-latency database change streams isolate downstream applications from online stores; connectors can support bootstrap and preserve transaction boundaries. | Decouple consumers from operational databases and preserve source transaction semantics where the connector supports them. |
+| Uber, DBEvents | Bootstrap and incremental ingestion are separate phases; bootstrap is batchable/incremental, while MySQL binlog changes are emitted in commit order as schema-governed, standardized Avro events. | Standardize change contracts and make large initial loads resumable rather than one monolithic job. |
+| Airbnb, SpinalTap | A reliable, low-latency, general-purpose CDC service propagates standardized mutation events to downstream consumers. | Centralize change-event distribution instead of coupling each consumer to source databases. |
+
+These publications support transaction-log CDC, standardized events, bootstrap plus incremental ingestion, watermark coordination, resumable chunks, transaction boundaries, and source isolation only where stated above. None establishes that these organizations use this lesson's exact tombstone schema.
+
+Sources: [Netflix — DBLog: A Watermark Based Change-Data-Capture Framework](https://arxiv.org/abs/2010.12597), [LinkedIn — Open sourcing Brooklin](https://www.linkedin.com/blog/engineering/open-source/brooklin-open-source), [Uber — DBEvents](https://www.uber.com/us/en/blog/dbevents-ingestion-framework/), and [Airbnb — SpinalTap](https://airbnb.tech/opensource/spinaltap/) (Accessed 2026-09-06).
+
+## 20. Our design versus current managed platforms
+
+| Concern | Foundational/manual approach | Databricks approach | Snowflake approach | Decision trigger |
+|---|---|---|---|---|
+| Key and order | Explicit business key and source sequence | AUTO CDC `KEYS` + `SEQUENCE BY`, or guarded MERGE | Stream metadata plus external sequence where source order matters | Can managed semantics express the source contract? |
+| Deletes and history | Business tombstone and policy; custom SCD logic | `APPLY AS DELETE WHEN`; managed SCD1/SCD2 and temporary SCD2 tombstones | Streams + Tasks + MERGE for DML/SCD2; Dynamic Table for declarative current result | Need policy-rich transitions, direct DML, or history? |
+| Out-of-order events | Batch deduplication and target sequence guard | AUTO CDC sequencing handles out-of-order arrival | MERGE must enforce external source order when arrival can differ | Does the platform position equal business order? |
+| Physical updates | Conventional file rewrite; measure amplification | Deletion vectors may defer full-file rewrite; liquid clustering is a measured candidate | Platform-managed micro-partition storage; choose logical pipeline construct first | Which physical feature is enabled and compatible, and what does evidence show? |
+| Concurrency | Deterministic whole-transaction retry; coordinate writers if needed | Evaluate row-level concurrency requirements before coordination | Use Snowflake transaction/task behavior and explicit orchestration where needed | Do residual conflicts threaten an SLA? |
+| Bootstrap and incremental processing | Checkpointed initial load plus CDC replay horizon | AUTO CDC once flow plus ongoing CDC, or AUTO CDC FROM SNAPSHOT | Streams/Tasks after source loading; Dynamic Table for supported declarative transforms | Is the source a change feed or snapshots, and how is the cutover ordered? |
+| Orchestration and control | Custom jobs, checkpoints, quarantine, and retries | Managed Lakeflow where sufficient; manual jobs for exceptional policy | Streams + Tasks for procedural control; Dynamic Table for declarative refresh | Is custom DML/control genuinely required? |
+| Evidence and operational cost | Team owns correctness, compatibility, monitoring, and upgrades | Validate managed feature semantics, protocol/client support, and workload metrics | Validate Stream retention/offsets, task behavior, refresh model, and source ordering | Does custom logic create measurable value exceeding its operating cost? |
+
+> Start with the correctness contract: authoritative key, authoritative ordering, delete semantics, replay horizon, and reactivation policy. On Databricks, prefer AUTO CDC when it expresses those requirements; then evaluate deletion vectors, liquid clustering, and row-level concurrency before creating custom workload coordination. On Snowflake, choose between Streams + Tasks + MERGE and a declarative Dynamic Table based on required DML and control. Custom logic must earn its operational cost.
+
+Evidence legend:
+
+- **Documented fact:** directly supported by a cited source.
+- **Lesson scenario:** supplied numbers or outcomes, not repository measurement.
+- **Architectural inference:** recommendation derived from requirements plus documented capabilities.
+
+## 21. Vocabulary Upgrade
 
 - “Late-arriving event” or “out-of-order event,” not “lag data.”
 - “Authoritative ordering signal,” not “authoritative date freshness.”
@@ -164,11 +218,11 @@ Reopen if CDC nears 15 minutes, backfill nears 24 hours, conflicts/retries mater
 - “The largest deterministic chunk that fits inside the safe concurrency window.”
 - “Stop optimizing when the measured business requirement is satisfied.”
 
-## 18. Architect/Staff challenge
+## 22. Architect/Staff challenge
 
 Design correctness first: establish the source contract, deterministic source cardinality, target guard, tombstone/reactivation policy, and dependency handling. Diagnose scan, rewrite, and write amplification separately. Treat layout as a measured candidate. Qualify concurrency behavior, retry the whole deterministic transaction, and coordinate writers from both SLAs. Size deterministic chunks from observed duration, monitor causal metrics, and state which evidence would reopen the decision.
 
-## 19. Interview answer
+## 23. Interview answer
 
 **Business outcome:** Keep exactly one authoritative current state per customer from the latest committed PostgreSQL change.
 
@@ -176,14 +230,36 @@ Design correctness first: establish the source contract, deterministic source ca
 
 **Performance evidence:** Separate source deduplication, target scan, rewrite, and commit; inspect files and bytes scanned/replaced and logical versus physical change.
 
-**Decision:** Pilot key locality and coordinate deterministic backfill chunks around the tighter CDC SLA.
+**Decision:** Prefer managed AUTO CDC when it expresses the contract; otherwise justify manual MERGE. Evaluate deletion vectors, liquid clustering, and row-level concurrency before coordinating deterministic backfill chunks around the tighter CDC SLA.
 
 **Trade-off:** Sequence-only updates preserve observed ordering but can amplify writes; skipping them needs validated ordering/checkpoint guarantees or separate sequence state.
 
-**What would change the decision:** Reopen for SLA pressure, rising retry/conflict cost, continuous backfills, new writers, small-file growth, or representative measurements that reject the layout hypothesis.
+**What would change the decision:** Reopen if managed semantics cannot express transition policy, client/protocol requirements rule out a feature, or SLA pressure, rising retry cost, continuous backfills, new writers, small-file growth, or representative measurements reject the hypothesis.
 
-## 20. Architecture bridge, open questions, and reflection
+## 24. Architecture bridge, open questions, and reflection
 
 Correct CDC state is a state-machine and contract problem before it is a MERGE syntax problem. Remaining questions: actual producer ordering/delivery; equal-sequence conflict policy; delete retention/PII; reactivation; after-image completeness; runtime/table features/isolation and row-level concurrency; current file statistics/layout; measured amplification; no-op ordering; conflict cost; chunk distribution; and SLA headroom.
 
-Primary references checked 2026-09-06: [Databricks MERGE](https://docs.databricks.com/aws/en/delta/merge), [isolation and conflicts](https://docs.databricks.com/aws/en/optimizations/isolation), [isolation levels](https://docs.databricks.com/aws/en/optimizations/isolation/isolation-levels), [Delta best practices](https://docs.databricks.com/aws/en/delta/best-practices), [data skipping](https://docs.databricks.com/aws/en/tables/data-skipping), [liquid clustering](https://docs.databricks.com/aws/en/delta/clustering), and [ACID guarantees](https://docs.databricks.com/aws/en/lakehouse/acid).
+## Primary references
+
+- [Databricks — AUTO CDC INTO (pipelines)](https://docs.databricks.com/aws/en/ldp/developer/ldp-sql-ref-apply-changes-into) — Accessed 2026-09-06.
+- [Databricks — Change data capture and snapshots](https://docs.databricks.com/aws/en/data-engineering/what-is-cdc) — Accessed 2026-09-06.
+- [Databricks — Deletion vectors in Databricks](https://docs.databricks.com/aws/en/tables/features/deletion-vectors) — Accessed 2026-09-06.
+- [Databricks — Row-level concurrency](https://docs.databricks.com/aws/en/optimizations/isolation/row-level-concurrency) — Accessed 2026-09-06.
+- [Databricks — Use liquid clustering for tables](https://docs.databricks.com/aws/en/tables/clustering) — Accessed 2026-09-06.
+- [Snowflake — Introduction to streams](https://docs.snowflake.com/en/user-guide/streams-intro) — Accessed 2026-09-06.
+- [Snowflake — Introduction to streams and tasks](https://docs.snowflake.com/en/user-guide/data-pipelines-intro) — Accessed 2026-09-06.
+- [Snowflake — Decision guide for dynamic tables](https://docs.snowflake.com/en/user-guide/dynamic-tables/decision-guide) — Accessed 2026-09-06.
+- [Netflix — DBLog: A Watermark Based Change-Data-Capture Framework](https://arxiv.org/abs/2010.12597) — Accessed 2026-09-06.
+- [LinkedIn — Open sourcing Brooklin: Near real-time data streaming at scale](https://www.linkedin.com/blog/engineering/open-source/brooklin-open-source) — Accessed 2026-09-06.
+- [Uber — DBEvents: A Standardized Framework for Efficiently Ingesting Data into Uber's Apache Hadoop Data Lake](https://www.uber.com/us/en/blog/dbevents-ingestion-framework/) — Accessed 2026-09-06.
+- [Airbnb — SpinalTap](https://airbnb.tech/opensource/spinaltap/) — Accessed 2026-09-06.
+
+### Additional Databricks references
+
+- [MERGE](https://docs.databricks.com/aws/en/delta/merge)
+- [Isolation and write conflicts](https://docs.databricks.com/aws/en/optimizations/isolation)
+- [Isolation levels](https://docs.databricks.com/aws/en/optimizations/isolation/isolation-levels)
+- [Delta best practices](https://docs.databricks.com/aws/en/delta/best-practices)
+- [Data skipping](https://docs.databricks.com/aws/en/tables/data-skipping)
+- [ACID guarantees](https://docs.databricks.com/aws/en/lakehouse/acid)

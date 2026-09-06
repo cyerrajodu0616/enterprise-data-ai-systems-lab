@@ -45,11 +45,19 @@
 
 ## Concurrency, workload coordination, and stopping
 
-**Correct:** Retry the complete deterministic transaction and prioritize the tighter CDC SLA with checkpointed backfill chunks.
+**Correct:** Retry the complete deterministic transaction for conflicts that remain, and protect the tighter CDC SLA with checkpointed backfill chunks when coordination is required.
 
-**Refinement:** Current row-level concurrency depends on runtime/table/isolation configuration. Measure both SLAs and chunk overhead.
+**Refinement:** First evaluate deletion vectors and current row-level concurrency requirements, then observe residual conflicts. Treat workload coordination as fallback/operational control and measure both SLAs and chunk overhead.
 
 **Staff vocabulary:** Physical file contention versus business-key conflict; safe concurrency window; evidence-based stop condition.
+
+## Managed platform and industry reference gap
+
+**Correct:** The foundational key, ordering, delete, replay, and reactivation contract remains portable.
+
+**Refinement:** Prefer Databricks AUTO CDC when its managed key/sequence/delete/SCD semantics express the contract; qualify full-file rewrites through deletion vectors and same-file conflicts through row-level concurrency. On Snowflake, distinguish procedural Streams + Tasks + MERGE from declarative Dynamic Tables and retain external source order when needed. Use Netflix DBLog, LinkedIn Brooklin, Uber DBEvents, and Airbnb SpinalTap only for practices their primary publications document.
+
+**Staff vocabulary:** Managed semantics before custom machinery; documented fact versus lesson scenario versus architectural inference.
 
 ## Remaining gaps
 

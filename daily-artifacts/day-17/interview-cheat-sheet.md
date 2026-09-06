@@ -36,9 +36,26 @@ Liquid clustering on `customer_id` is a candidate to test, never a promised resu
 
 ## Concurrency and coordination
 
-In conventional copy-on-write, disjoint keys in one file may contend. A conflict fails atomically; retry the complete deterministic transaction against the latest snapshot. Current behavior depends on runtime, isolation, table features, predicates, and row-level concurrency.
+Without applicable row-level concurrency, conventional copy-on-write changes to disjoint rows in one file may contend. A conflict fails atomically; retry the complete deterministic transaction against the latest snapshot. Databricks row-level concurrency can reduce same-file/different-row conflicts when documented requirements are met, including Runtime 14.3 LTS+, an unpartitioned table, and deletion vectors enabled. Deletion vectors are not universal; enabling them upgrades the table protocol and requires compatible clients.
 
-Safe backfill window = CDC interval − p95 CDC duration − buffer = 15 − 6 − 2 ≈ 7 minutes. Pilot deterministic checkpointed chunks, prioritize CDC, and validate both SLAs.
+First validate available concurrency and residual conflicts. If coordination remains necessary, safe backfill window = CDC interval − p95 CDC duration − buffer = 15 − 6 − 2 ≈ 7 minutes. Pilot deterministic checkpointed chunks, prioritize CDC, and validate both SLAs.
+
+## Managed-platform choices
+
+- **Databricks:** AUTO CDC uses `KEYS`, `SEQUENCE BY`, and `APPLY AS DELETE WHEN` for managed SCD Type 1 or Type 2 processing; sequencing handles out-of-order arrival. Its temporary SCD2 tombstones and configurable retention are not the same as the lesson's business tombstone policy. Prefer it when it expresses the contract; justify manual MERGE for exceptional policy or unsupported requirements.
+- **Delta physical behavior:** Without deletion vectors a row change can rewrite its containing file. Deletion vectors may defer that rewrite. Evaluate protocol/client compatibility, liquid clustering, and row-level concurrency before custom coordination.
+- **Snowflake:** Streams expose `METADATA$ACTION`, `METADATA$ISUPDATE`, and `METADATA$ROW_ID`; UPDATE appears as a DELETE/INSERT pair. Use Streams + Tasks + MERGE for procedural DML/control and Dynamic Tables for supported declarative SELECT pipelines. Stream offsets do not establish an external source's business order; retain an external sequence for out-of-order CDC.
+
+> Start with the correctness contract: authoritative key, authoritative ordering, delete semantics, replay horizon, and reactivation policy. On Databricks, prefer AUTO CDC when it expresses those requirements; then evaluate deletion vectors, liquid clustering, and row-level concurrency before creating custom workload coordination. On Snowflake, choose between Streams + Tasks + MERGE and a declarative Dynamic Table based on required DML and control. Custom logic must earn its operational cost.
+
+## Industry patterns
+
+- Netflix DBLog: watermark-coordinated snapshots with transaction-log CDC and resumable chunks.
+- LinkedIn Brooklin: bootstrap and transaction-boundary support plus isolation of downstream consumers from operational stores.
+- Uber DBEvents: bootstrap plus incremental ingestion and schema-governed standardized events.
+- Airbnb SpinalTap: reliable low-latency CDC distributing standardized events.
+
+These sources do not document use of this lesson's exact tombstone schema. Full citations are in the [Day 17 lesson](lesson.md#primary-references), all accessed 2026-09-06.
 
 ## Vocabulary Upgrade
 
@@ -65,8 +82,8 @@ Safe backfill window = CDC interval − p95 CDC duration − buffer = 15 − 6 �
 
 **Performance evidence:** I separate dedup, target scan, rewrite, and commit and compare files/bytes scanned with physical bytes rewritten versus logical changes.
 
-**Decision:** I would test better customer-key locality and coordinate deterministic backfill chunks around CDC's tighter SLA.
+**Decision:** I would prefer managed AUTO CDC when it expresses the contract, then evaluate deletion vectors, locality, and row-level concurrency before adding custom workload coordination. On Snowflake, I would choose procedural Streams + Tasks + MERGE or a declarative Dynamic Table from the required DML and control.
 
 **Trade-off:** Skipping no-op attribute updates saves rewrites but may lose observed sequence state; clustering and chunking also impose maintenance/commit costs.
 
-**What would change the decision:** SLA pressure, greater retry cost, continuous backfills, new writers, small-file growth, or representative measurements that disprove the hypothesis.
+**What would change the decision:** Managed-semantic gaps, feature/client incompatibility, SLA pressure, greater retry cost, continuous backfills, new writers, small-file growth, or representative measurements that disprove the hypothesis.
